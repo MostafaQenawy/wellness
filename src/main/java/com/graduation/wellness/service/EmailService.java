@@ -1,6 +1,7 @@
-package com.graduation.wellness.email;
+package com.graduation.wellness.service;
 
 
+import com.graduation.wellness.model.entity.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,7 @@ public class EmailService {
             String to,
             String username,
             EmailTemplateName emailTemplate,
-            String activationCode,
-            String subject
+            String code
     ) throws MessagingException {
         String templateName;
         if (emailTemplate == null) {
@@ -47,14 +47,14 @@ public class EmailService {
         );
         Map<String, Object> properties = new HashMap<>();
         properties.put("username", username);
-        properties.put("activation_code", activationCode);
+        properties.put("code", code);
 
         Context context = new Context();
         context.setVariables(properties);
 
         helper.setFrom("wellness.hub.app@gmail.com");
         helper.setTo(to);
-        helper.setSubject(subject);
+        helper.setSubject(emailTemplate.getName());
 
         String template = templateEngine.process(templateName, context);
 

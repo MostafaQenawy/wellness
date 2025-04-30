@@ -1,15 +1,11 @@
 package com.graduation.wellness.controller;
-import com.graduation.wellness.security.JWTResponseDto;
-import com.graduation.wellness.security.JwtRequestDto;
-import com.graduation.wellness.service.ActivationCodeService;
+import com.graduation.wellness.model.entity.EmailTemplateName;
+import com.graduation.wellness.service.CodeService;
 import com.graduation.wellness.service.UserService;
-import com.graduation.wellness.model.dto.UserDto;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -21,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @Slf4j
@@ -29,7 +28,7 @@ public class UserController {
 
 
     private UserService userService;
-    private ActivationCodeService activationCodeService;
+    private CodeService CodeService;
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> findById(@Valid @PathVariable Long id){
@@ -67,21 +66,53 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
-
+//OTP
     @PostMapping("/active")
     public ResponseEntity<String> activeAccount(@RequestParam String email) throws MessagingException {
-        activationCodeService.activateAccount(email);
+        String code=CodeService.sendOTPMail(email , EmailTemplateName.ACTIVATE_ACCOUNT);
 
-        return ResponseEntity.ok("Activation email has been sent");
+        return ResponseEntity.ok(code);
     }
 
-
     @PostMapping("/verify")
-    public ResponseEntity<String> verifyCode(@RequestParam String email, @RequestParam String code) {
-        boolean isVerified = activationCodeService.validateCode(email, code);
+    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String code) {
+        boolean isVerified = CodeService.validateUser(email, code );
         if (isVerified){
             return ResponseEntity.ok("Account activated successfully!");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid activation code.");
     }
+
+    @PostMapping("/changePasswordRequest")
+    public ResponseEntity<String> changePasswordMail(@RequestParam String email) throws MessagingException {
+        String code=CodeService.sendOTPMail(email , EmailTemplateName.CHANGE_PASSWORD);
+
+        return ResponseEntity.ok(code);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<String> validateCode(@RequestParam String email, @RequestParam String code) {
+        boolean isValid = CodeService.validateCode(email, code );
+        if (isValid){
+            return ResponseEntity.ok("Valid Code");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Code.");
+    }
+
+    @PostMapping("/changePassword")
+    public Map changePassword(@RequestParam String email, @RequestParam String password) {
+        userService.changePassword(email , password);
+
+        Map<String ,String> map = new HashMap<>();
+        map.put("status" , "success");
+        map.put("message" ,"Password has been changed successfully!");
+        return map;
+    }
+
+    @DeleteMapping("/deleteAccount")
+    public ResponseEntity<String> deleteAccount(@RequestParam String email) {
+        userService.deleteAccount(email);
+        return ResponseEntity.ok("Account has been deleted");
+    }
+
 }

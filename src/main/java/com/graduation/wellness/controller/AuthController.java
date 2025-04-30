@@ -29,11 +29,50 @@ public class AuthController {
 
     private UserService userService;
     private AuthService authService;
+    private JwtTokenUtils jwtTokenUtils;
 
 
     @PostMapping("/login")
     public ResponseEntity<JWTResponseDto> login (@Valid @RequestBody JwtRequestDto jwtRequest){
         return ResponseEntity.ok(authService.login(jwtRequest));
+    }
+
+    @PostMapping("/facebook/login")
+    public ResponseEntity<JWTResponseDto> loginWithFacebook(@RequestBody JWTResponseDto request) {
+        User fbUser = userService.getUserFromFacebook(request.getAccessToken());
+
+        if (fbUser == null || fbUser.getEmail() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+       boolean exists=userService.isExist(fbUser.getEmail());
+        if (!exists) {
+
+            userService.save(fbUser); // Register new user
+
+        }
+
+        String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId());
+        return ResponseEntity.ok(new JWTResponseDto(jwt));
+    }
+
+    @PostMapping("google/login")
+    public ResponseEntity<?> loginWithGoogle(@RequestBody JWTResponseDto request) {
+        User googleUser = userService.getGoogleUser(request.getAccessToken());
+
+        if (googleUser == null || googleUser.getEmail() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Google ID token");
+        }
+
+        boolean exists=userService.isExist(googleUser.getEmail());
+        if (!exists) {
+
+            userService.save(googleUser); // Register new user
+
+        }
+
+        String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId());
+        return ResponseEntity.ok(new JWTResponseDto(jwt));
     }
 
     @PostMapping("/register")

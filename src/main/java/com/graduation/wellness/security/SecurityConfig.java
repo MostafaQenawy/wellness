@@ -19,6 +19,11 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 
 @Configuration
@@ -38,25 +43,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
+                .cors(Customizer.withDefaults()) // ✅ Enable CORS
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login/**", "/register", "/oauth2/**","/login/oauth2/code/facebook" ,
-                                "/login/oauth2/code/google" , "/Hello" )
+                        .requestMatchers("/login/**", "/register", "/oauth2/**",
+                                "/login/oauth2/code/facebook", "/login/oauth2/code/google",
+                                "/Hello", "/facebook/login", "/google/login")
                         .permitAll()
                         .requestMatchers("/protected-endpoint").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // ✅ Allow session for OAuth2 login
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(successHandler) // Use our JWT-generating success handler
+                        .successHandler(successHandler)
                 )
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
-
         return http.build();
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://10.0.2.2:8080", "http://localhost:8080")); // Replace PORT if needed
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // if using cookies/sessions
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
 
     @Bean

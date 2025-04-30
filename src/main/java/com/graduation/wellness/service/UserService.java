@@ -1,21 +1,22 @@
 package com.graduation.wellness.service;
 
-import com.graduation.wellness.email.EmailService;
-import com.graduation.wellness.email.EmailTemplateName;
 import com.graduation.wellness.exception.BaseApiExcepetions;
 import com.graduation.wellness.mapper.UserMapper;
 import com.graduation.wellness.model.dto.UserDto;
 import com.graduation.wellness.model.entity.User;
+import com.graduation.wellness.repository.ActivationCodeRepo;
 import com.graduation.wellness.repository.UserRepo;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.RestTemplate;
 
-import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,9 @@ public class UserService {
 
     private final RoleService roleService;
 
+    private final ActivationCodeRepo activationCodeRepo;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public Map save(User user) {
         if(user.getPassword() != null) {
@@ -47,6 +51,63 @@ public class UserService {
         map.put("status" , "success");
         map.put("message" ,"User had been added successfully!");
         return map;
+    }
+
+    public User getGoogleUser(String idToken) {
+        String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken;
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            JSONObject json = new JSONObject(response.getBody());
+
+            User user = new User();
+            user.setEmail(json.getString("email"));
+            user.setFirstName(json.getString("given_name"));
+            user.setLastName(json.getString("family_name"));
+            user.setProvider("GOOGLE");
+            user.setProviderUserId(json.getString("sub"));
+            user.setVerified(true);
+            return user;
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public User getUserFromFacebook(String accessToken) {
+        String url = "https://graph.facebook.com/me?fields=id,name,email&access_token=" + accessToken;
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            JSONObject json = new JSONObject(response.getBody());
+
+            String id = json.getString("id");
+            String email = json.getString("email");
+            String name = json.getString("name");
+
+            String[] names = name.split(" ", 2);
+            String firstName = names[0];
+            String lastName = names.length > 1 ? names[1] : "";
+
+            User user = new User();
+            user.setEmail(email);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setProvider("FACEBOOK");
+            user.setProviderUserId(id);
+            user.setVerified(true);
+
+            return user;
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void changePassword(String email, String password) {
+        User user = loadUserByEmail(email);
+        if(password != null) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        userRepo.save(user);
     }
 
 
@@ -69,6 +130,11 @@ public class UserService {
         return user;
     }
 
+    public void activateUser(User user) {
+        user.setVerified(true);
+        userRepo.save(user);
+    }
+
     public boolean isExist(String email) {
         return userRepo.findByEmail(email) != null;
     }
@@ -81,6 +147,12 @@ public class UserService {
     public boolean isOAuthUser(String email) {
         User user = loadUserByEmail(email);
         return user != null && "GOOGLE".equals(user.getProvider());
+    }
+
+    public void deleteAccount(String email) {
+        User user = loadUserByEmail(email);
+        activationCodeRepo.deleteByExpiryTimeBefore(LocalDateTime.now());
+        userRepo.delete(user);
     }
 
 }

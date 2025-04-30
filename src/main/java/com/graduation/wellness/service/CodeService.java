@@ -1,16 +1,16 @@
 package com.graduation.wellness.service;
 
-import com.graduation.wellness.email.EmailService;
-import com.graduation.wellness.email.EmailTemplateName;
+import com.graduation.wellness.model.entity.EmailTemplateName;
 import com.graduation.wellness.model.entity.ActivationCode;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.repository.ActivationCodeRepo;
 import com.graduation.wellness.repository.UserRepo;
 import jakarta.mail.MessagingException;
+
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -18,24 +18,25 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class ActivationCodeService {
+public class CodeService {
 
     private final ActivationCodeRepo activationCodeRepo;
     private final EmailService emailService;
     private final UserService userService;
     private final UserRepo userRepo;
 
-    public void activateAccount(String email) throws MessagingException {
+    public String sendOTPMail(String email , EmailTemplateName emailTemplateName) throws MessagingException {
         User user  = userService.loadUserByEmail(email);
-        String code = generateAndSendActivationCode(user);
-        sendValidationEmail(user , code);
+        String code = generateAndSendCode(user);
+        sendValidationEmail(user , code , emailTemplateName);
+        return code;
     }
 
-    public String generateAndSendActivationCode(User user) {
+    public String generateAndSendCode(User user) {
 
         activationCodeRepo.findByUser(user).ifPresent(activationCodeRepo::delete);
         String code =generateActivationCode(6); // 6-digit code
-        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(1); // Expire in 1 min
+        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(2); // Expire in 1 min
         ActivationCode activationCode = new ActivationCode(user, code, expiryTime);
         activationCodeRepo.save(activationCode);
         return code;
@@ -55,13 +56,12 @@ public class ActivationCodeService {
         return codeBuilder.toString();
     }
 
-    public void sendValidationEmail(User user , String activationCode) throws MessagingException {
+    public void sendValidationEmail(User user , String activationCode , EmailTemplateName emailTemplateName) throws MessagingException {
         emailService.sendEmail(
                 user.getEmail(),
                 user.getUsername(),
-                EmailTemplateName.ACTIVATE_ACCOUNT,
-                activationCode,
-                "Account activation"
+                emailTemplateName,
+                activationCode
         );
     }
 
@@ -83,14 +83,22 @@ public class ActivationCodeService {
         if (!activationCode.getCode().equals(code))
             return false; // Incorrect code
 
-        // Activate user and delete activation code
-        user.setVerified(true);
-        userRepo.save(user);
+        //delete activation code
         activationCodeRepo.delete(activationCode);
 
         return true;
     }
 
+    public boolean validateUser(String email, String code) {
+        boolean validCode = validateCode(email, code);
+        if (validCode){
+            User user = userService.loadUserByEmail(email);
+            userService.activateUser(user);
+        }
+        return validCode;
+    }
+
+    @Transactional
     @Scheduled(fixedRate = 60000) // Run every 1 minute
     public void removeExpiredActivationCodes() {
         activationCodeRepo.deleteByExpiryTimeBefore(LocalDateTime.now());

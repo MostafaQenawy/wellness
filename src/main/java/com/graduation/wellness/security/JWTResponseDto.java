@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JWTResponseDto {
 	
-	private String access_token;
+	private String accessToken;
 
 }

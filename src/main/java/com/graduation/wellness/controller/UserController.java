@@ -1,6 +1,7 @@
 package com.graduation.wellness.controller;
 import com.graduation.wellness.model.entity.EmailTemplateName;
 import com.graduation.wellness.service.CodeService;
+import com.graduation.wellness.service.EmailService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class UserController {
 
 
     private UserService userService;
-    private CodeService CodeService;
+    private EmailService emailService;
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> findById(@Valid @PathVariable Long id){
@@ -66,38 +67,21 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
-//OTP
-    @PostMapping("/active")
-    public ResponseEntity<String> activeAccount(@RequestParam String email) throws MessagingException {
-        String code=CodeService.sendOTPMail(email , EmailTemplateName.ACTIVATE_ACCOUNT);
 
+    @PostMapping("/active")
+    public ResponseEntity<String> sendOTPMail(@RequestParam String username , @RequestParam String email) throws MessagingException {
+        String code=emailService.verificationMail(username, email);
         return ResponseEntity.ok(code);
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam String email, @RequestParam String code) {
-        boolean isVerified = CodeService.validateUser(email, code );
-        if (isVerified){
-            return ResponseEntity.ok("Account activated successfully!");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid activation code.");
-    }
 
     @PostMapping("/changePasswordRequest")
     public ResponseEntity<String> changePasswordMail(@RequestParam String email) throws MessagingException {
-        String code=CodeService.sendOTPMail(email , EmailTemplateName.CHANGE_PASSWORD);
+        String code= emailService.changePassswordMail(email);
 
         return ResponseEntity.ok(code);
     }
 
-    @PostMapping("/validate")
-    public ResponseEntity<String> validateCode(@RequestParam String email, @RequestParam String code) {
-        boolean isValid = CodeService.validateCode(email, code );
-        if (isValid){
-            return ResponseEntity.ok("Valid Code");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Code.");
-    }
 
     @PostMapping("/changePassword")
     public Map changePassword(@RequestParam String email, @RequestParam String password) {

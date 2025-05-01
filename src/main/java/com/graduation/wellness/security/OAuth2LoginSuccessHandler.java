@@ -72,7 +72,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             user.setLastName(lastName);
             user.setProvider(provider);
             user.setProviderUserId(providerUserId);
-            user.setVerified(true);
             userService.save(user);
         }else {
             user = userService.loadUserByEmail(email);

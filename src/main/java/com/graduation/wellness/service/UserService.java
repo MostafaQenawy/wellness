@@ -4,7 +4,6 @@ import com.graduation.wellness.exception.BaseApiExcepetions;
 import com.graduation.wellness.mapper.UserMapper;
 import com.graduation.wellness.model.dto.UserDto;
 import com.graduation.wellness.model.entity.User;
-import com.graduation.wellness.repository.ActivationCodeRepo;
 import com.graduation.wellness.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -13,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +30,6 @@ public class UserService {
 
     private final RoleService roleService;
 
-    private final ActivationCodeRepo activationCodeRepo;
-
     private final RestTemplate restTemplate = new RestTemplate();
 
     public Map save(User user) {
@@ -43,7 +38,6 @@ public class UserService {
         }
         if(user.getProvider() == null){
             user.setProvider("LOCAL");
-            user.setVerified(false);
         }
         user.setRole(roleService.findByName("ROLE_USER"));
         userRepo.save(user);
@@ -65,7 +59,6 @@ public class UserService {
             user.setLastName(json.getString("family_name"));
             user.setProvider("GOOGLE");
             user.setProviderUserId(json.getString("sub"));
-            user.setVerified(true);
             return user;
 
         } catch (Exception e) {
@@ -93,7 +86,6 @@ public class UserService {
             user.setLastName(lastName);
             user.setProvider("FACEBOOK");
             user.setProviderUserId(id);
-            user.setVerified(true);
 
             return user;
 
@@ -130,10 +122,6 @@ public class UserService {
         return user;
     }
 
-    public void activateUser(User user) {
-        user.setVerified(true);
-        userRepo.save(user);
-    }
 
     public boolean isExist(String email) {
         return userRepo.findByEmail(email) != null;
@@ -151,7 +139,6 @@ public class UserService {
 
     public void deleteAccount(String email) {
         User user = loadUserByEmail(email);
-        activationCodeRepo.deleteByExpiryTimeBefore(LocalDateTime.now());
         userRepo.delete(user);
     }
 

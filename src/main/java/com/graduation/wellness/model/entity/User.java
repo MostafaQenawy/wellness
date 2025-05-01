@@ -48,9 +48,6 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private String password;
 
-    @Column
-    private boolean verified = false;
-
     @Transient
     private GrantedAuthority authorities ;
 

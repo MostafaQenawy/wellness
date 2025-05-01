@@ -60,7 +60,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect   # Defines the SQL dialect for MySQL 8
         format_sql: true                               # Pretty prints SQL queries in logs
     hibernate:
-      ddl-auto: update                                 # Automatically updates the database schema (see notes below)
+      ddl-auto: create-drop                                 # Automatically updates the database schema (see notes below)
 
 logging:
   level:

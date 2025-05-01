@@ -66,11 +66,8 @@ public class AuthController {
 
         boolean exists=userService.isExist(googleUser.getEmail());
         if (!exists) {
-
             userService.save(googleUser); // Register new user
-
         }
-
         String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId());
         return ResponseEntity.ok(new JWTResponseDto(jwt));
     }

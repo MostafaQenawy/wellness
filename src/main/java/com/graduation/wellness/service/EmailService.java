@@ -1,7 +1,7 @@
 package com.graduation.wellness.service;
 
 
-import com.graduation.wellness.model.entity.EmailTemplateName;
+import com.graduation.wellness.model.enums.EmailTemplateName;
 import com.graduation.wellness.model.entity.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -73,7 +73,7 @@ public class EmailService {
         sendEmail(
                 user.getEmail(),
                 user.getUsername(),
-                EmailTemplateName.ACTIVATE_ACCOUNT,
+                EmailTemplateName.CHANGE_PASSWORD,
                 code
         );
         return code;
@@ -84,7 +84,7 @@ public class EmailService {
         sendEmail(
                 email,
                 username,
-                EmailTemplateName.CHANGE_PASSWORD,
+                EmailTemplateName.ACTIVATE_ACCOUNT,
                 code
         );
         return code;

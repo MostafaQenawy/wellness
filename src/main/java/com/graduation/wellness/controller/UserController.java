@@ -1,6 +1,4 @@
 package com.graduation.wellness.controller;
-import com.graduation.wellness.model.entity.EmailTemplateName;
-import com.graduation.wellness.service.CodeService;
 import com.graduation.wellness.service.EmailService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;

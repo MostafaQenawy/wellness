@@ -31,10 +31,4 @@ public class SignUpController {
         WorkoutPlanDTO dto = workoutPlanService.getPlanToUser(userInfo);    //Get from DB match this user
         userWorkoutPlanService.assignPlanToUser(userInfo, dto);             //Assign this plan to a user
     }
-
-    @GetMapping("/saveTest")
-    public WorkoutPlanDTO saveTest(@RequestBody UserInfo userInfo) {
-        userInfoService.saveUserData(userInfo);
-        return workoutPlanService.getPlanToUser(userInfo);    //Get from DB match this user
-    }
 }

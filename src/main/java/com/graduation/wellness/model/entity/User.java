@@ -55,10 +55,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "roleId")
     private Role role ;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id")
-    private UserInfo userInfo;
-
 
     public User(String firstName  , String lastName ,
                  String email , String password , String provider ) {

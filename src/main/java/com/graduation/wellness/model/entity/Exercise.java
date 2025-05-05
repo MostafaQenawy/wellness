@@ -1,41 +1,44 @@
 package com.graduation.wellness.model.entity;
-import jakarta.persistence.*;
-import lombok.*;
 
-import java.util.List;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "exercises")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "exercises")
 public class Exercise {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; // Primary Key
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "target_muscle", nullable = false)
     private String targetMuscle;
 
-    @Column(nullable = false)
-    private String videoUrl;
+    @Column(name = "difficulty", nullable = false)
+    private String difficulty;
 
-    @Column(nullable = false)
-    private String sets;
+    @Column(name = "equipment_type", nullable = false)
+    private String equipment_type;
 
+    @Column(name = "image_url", nullable = false)
+    private String image_url;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "planExercises"
-            , joinColumns = @JoinColumn(name = "exercise_id")
-            , inverseJoinColumns = @JoinColumn(name = "plan_id"))
-    @OrderColumn(name = "id")
-    private List<Plan> plan ;
+    @Column(name = "male_video_url", nullable = false)
+    private String maleVideoUrl;
+
+    @Column(name = "female_video_url", nullable = false)
+    private String femaleVideoUrl;
+
+    @Column(name = "similar_group_id", nullable = false)
+    private Integer similarGroupId;
 }
-

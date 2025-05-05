@@ -1,69 +1,83 @@
 package com.graduation.wellness.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.graduation.wellness.util.AgeClassifier.classifyAge;
+import static com.graduation.wellness.util.BMICalculator.BMICalculate;
+import static com.graduation.wellness.util.BMIClassifier.classifyBMI;
 
 @Data
 @Entity
-@Table(name = "user_info")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "user_info")
 public class UserInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @Column(name = "gender")
+    private String gender;          //only these values: Male / Female
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate dateOfBirth;
+    @Column(name = "age")
+    private int age;
 
-    @Column(nullable = false, length = 10)
-    private String gender;
+    @Column(name = "weight")
+    private int weight;
 
-    @Column(nullable = false)
-    private double weight;
+    @Column(name = "height")
+    private int height;
 
-    @Column(nullable = false)
-    private double height;
+    @Column(name = "goal")
+    private String goal;                //only these values: Weight Cut / Muscle Gain / Increase Strength
 
-    @Column(nullable = false, length = 100)
-    private String goal;
+    @Column(name = "activity_level")
+    private String activityLevel;       //only these values: sedentary / lightly active / Moderately active / very active
 
-    @Column(nullable = false, length = 50)
-    private String activityLevel;
+    @Column(name = "experience_level")
+    private String experienceLevel;     //only these values: Beginner / Intermediate / advanced
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "userInjuries"
-            , joinColumns = @JoinColumn(name = "userInfo_id")
-            , inverseJoinColumns = @JoinColumn(name = "injury_id"))
-    @OrderColumn(name = "id")
-    private List<Injury> injuries ;
+    @Column(name = "days_per_week")
+    private int daysPerWeek;            //only these values: 1 / 2 / 3 / 4 / 5 / 6
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private Allergy allergy;
+    @JsonManagedReference // Indicates the forward part of the relationship
+    @OneToOne(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserPlan UserWorkoutPlan;
 
-    // Enum: A user selects one predefined dietary preference
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private DietaryPreference dietaryPreference;
+    @ManyToMany
+    @JoinTable(
+            name = "user_favourite_exercises",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "exercise_id")
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Exercise> favouriteExercises = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "roleId")
-    private Plan plan;
 
+    @Transient
+    public double getBMI() {
+        return BMICalculate(weight, height);
+    }
+
+    @Transient
+    public String getBMICategory() {
+        return classifyBMI(getBMI());
+    }
+
+    @Transient
+    public String getAgeGroup() {
+        return classifyAge(age);
+    }
 }
-
-
-

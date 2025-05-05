@@ -1,4 +1,4 @@
-package com.graduation.wellness.model.entity;
+package com.graduation.wellness.model.enums;
 
 import lombok.Getter;
 

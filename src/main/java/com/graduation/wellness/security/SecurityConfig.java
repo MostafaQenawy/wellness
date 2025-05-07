@@ -46,8 +46,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // ✅ Enable CORS
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/active",  "/register" , "/login" ,"/changePasswordRequest",
-                                "signup/save" , "/facebook/login", "/google/login")
+                        .requestMatchers("/login/**","/active",  "/register", "/oauth2/**",
+                                "/login/oauth2/code/facebook", "/login/oauth2/code/google"
+                                , "/facebook/login", "/google/login","/signup/save")
                         .permitAll()
                         .anyRequest().authenticated()
                 )

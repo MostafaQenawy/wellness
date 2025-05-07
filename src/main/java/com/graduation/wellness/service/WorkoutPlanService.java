@@ -1,7 +1,6 @@
 package com.graduation.wellness.service;
 
-import com.graduation.wellness.model.entity.UserInfo;
-import com.graduation.wellness.model.entity.WorkoutPlan;
+import com.graduation.wellness.model.entity.*;
 import lombok.extern.slf4j.Slf4j;
 import com.graduation.wellness.model.dto.WorkoutPlanDTO;
 import com.graduation.wellness.model.dto.WorkoutPlanWeekDTO;
@@ -11,6 +10,7 @@ import com.graduation.wellness.repository.WorkoutPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,9 +32,7 @@ public class WorkoutPlanService {
             log.info("No best template");
             return null;
         }
-
         WorkoutPlan workoutPlan = bestTemplate.get();
-
         return mapToDto(workoutPlan);
     }
 
@@ -44,7 +42,6 @@ public class WorkoutPlanService {
                 , userInfo.getGoal().name(), userInfo.getDaysPerWeek()
         );
     }
-
 
     public WorkoutPlanDTO mapToDto(WorkoutPlan plan) {
         List<WorkoutPlanWeekDTO> weekDTOs = plan.getWeeks().stream().map(week -> {

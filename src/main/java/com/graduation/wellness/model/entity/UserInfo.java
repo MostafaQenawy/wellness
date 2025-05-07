@@ -28,8 +28,12 @@ import static com.graduation.wellness.util.BMIClassifier.classifyBMI;
 public class UserInfo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;            // Same as user's ID
+
+    @OneToOne
+    @MapsId                     // This makes UserInfo use the User's ID
+    @JoinColumn(name = "id")    // This will also be the PK and FK
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
@@ -73,7 +77,6 @@ public class UserInfo {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Exercise> favouriteExercises = new ArrayList<>();
-
 
     @Transient
     public double getBMI() {

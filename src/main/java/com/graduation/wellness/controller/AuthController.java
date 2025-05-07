@@ -69,7 +69,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Map register (@Valid @RequestBody User user){
+    public Map<String, String>  register (@Valid @RequestBody User user){
         return userService.save(user);
     }
 

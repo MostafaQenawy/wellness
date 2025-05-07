@@ -1,21 +1,14 @@
 package com.graduation.wellness.controller;
+import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.EmailService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,5 +57,11 @@ public class UserController {
         userService.deleteAccount(email);
         return ResponseEntity.ok("Account has been deleted");
     }
+
+    @DeleteMapping("/updateAccount")
+    public Map<String, String>  updateAccount(User user) {
+        return userService.updateAccount(user);
+    }
+
 
 }

@@ -32,7 +32,7 @@ public class UserService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Map save(User user) {
+    public Map<String, String>  save(User user) {
         if(user.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -128,13 +128,19 @@ public class UserService {
     }
 
     private static List<GrantedAuthority> getAuthorities(User user) {
-
         return (List<GrantedAuthority>) user.getAuthorities();
     }
 
-    public boolean isOAuthUser(String email) {
-        User user = loadUserByEmail(email);
-        return user != null && "GOOGLE".equals(user.getProvider());
+    public Map<String, String> updateAccount(User user) {
+        User updatedUser = loadUserByEmail(user.getEmail());
+        updatedUser.setFirstName(user.getFirstName());
+        updatedUser.setLastName(user.getLastName());
+
+        userRepo.save(updatedUser);
+        Map<String ,String> map = new HashMap<>();
+        map.put("status" , "success");
+        map.put("message" ,"User profile has been updated successfully!");
+        return map;
     }
 
     public void deleteAccount(String email) {

@@ -46,8 +46,6 @@ public class UserWorkoutPlanService {
             case MUSCLE_GAIN -> "Sets: 3 - Reps 8 ~ 12";
         };
 
-
-
         UserPlan userPlan = UserPlan.builder()
                 .daysPerWeek(templatePlan.getDaysPerWeek())
                 .userInfo(userInfo)

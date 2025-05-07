@@ -5,10 +5,7 @@ import com.graduation.wellness.service.UserWorkoutPlanService;
 import com.graduation.wellness.service.WorkoutPlanService;
 import com.graduation.wellness.model.dto.WorkoutPlanDTO;
 import com.graduation.wellness.model.entity.UserInfo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/signup")
@@ -26,8 +23,8 @@ public class SignUpController {
     }
 
     @GetMapping("/save")
-    public void saveUserDataApi(@RequestBody UserInfo userInfo) {
-        userInfoService.saveUserData(userInfo);
+    public void saveUserDataApi(@RequestBody UserInfo userInfo, @RequestParam long userID) {
+        userInfoService.saveUserData(userInfo, userID);
         WorkoutPlanDTO dto = workoutPlanService.getPlanToUser(userInfo);    //Get from DB match this user
         userWorkoutPlanService.assignPlanToUser(userInfo, dto);             //Assign this plan to a user
     }

@@ -49,8 +49,8 @@ spring:
       connection-timeout: 50000          # Maximum time (in milliseconds) to wait for a connection from the pool (50 seconds)
       idle-timeout: 300000               # Time (in milliseconds) before an idle connection is removed from the pool (5 minutes)
       max-lifetime: 900000               # Maximum lifetime of a connection (in milliseconds) before it's closed (15 minutes)
-      maximum-pool-size: 50               # Maximum number of connections allowed in the pool (8 connections)
-      minimum-idle: 8                    # Minimum number of idle connections that should always be maintained (8 connections)
+      maximum-pool-size: 20               # Maximum number of connections allowed in the pool (8 connections)
+      minimum-idle: 5                    # Minimum number of idle connections that should always be maintained (8 connections)
       pool-name: Mypool
       auto-commit: false
 

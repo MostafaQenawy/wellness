@@ -1,7 +1,6 @@
 package com.graduation.wellness.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graduation.wellness.model.dto.UserDto;
+
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.security.JWTResponseDto;
 import com.graduation.wellness.security.JwtRequestDto;
@@ -11,12 +10,9 @@ import com.graduation.wellness.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -52,7 +48,7 @@ public class AuthController {
 
         }
 
-        String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId());
+        String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId() , fbUser.getUsername());
         return ResponseEntity.ok(new JWTResponseDto(jwt));
     }
 
@@ -68,13 +64,12 @@ public class AuthController {
         if (!exists) {
             userService.save(googleUser); // Register new user
         }
-        String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId());
+        String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId() , googleUser.getUsername());
         return ResponseEntity.ok(new JWTResponseDto(jwt));
     }
 
     @PostMapping("/register")
     public Map register (@Valid @RequestBody User user){
-
         return userService.save(user);
     }
 
@@ -84,12 +79,4 @@ public class AuthController {
         // Returning nothing to prevent error
     }
 
-    @GetMapping("/provider")
-    public ResponseEntity<JWTResponseDto> displayToken(HttpServletRequest request) {
-
-        String token = (String) request.getSession().getAttribute("jwtToken");
-        JWTResponseDto jwtResponse = new JWTResponseDto(token);
-
-        return ResponseEntity.ok(jwtResponse);
-    }
 }

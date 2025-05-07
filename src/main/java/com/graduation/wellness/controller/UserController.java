@@ -1,4 +1,5 @@
 package com.graduation.wellness.controller;
+import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.EmailService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
@@ -28,43 +29,8 @@ public class UserController {
 
     private UserService userService;
     private EmailService emailService;
+    private JwtTokenUtils jwtTokenUtils;
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<?> findById(@Valid @PathVariable Long id){
-        return ResponseEntity.ok(userService.findById(id));
-    }
-
-    @GetMapping("/profile-picture/{userId}")
-    public ResponseEntity<Resource> getProfilePicture(@PathVariable String userId) {
-        try {
-            Path imagePath = Paths.get("uploads/profile_pictures/" + userId + ".jpg");
-            Resource resource = new UrlResource(imagePath.toUri());
-
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/api/v1")
-    public String Hello(){
-        return "Hello from springboot and Keycloak";
-    }
-
-    @GetMapping("/protected-endpoint")
-    public ResponseEntity<String> getProtectedData(Authentication authentication) {
-        log.info("Current Authentication: " + authentication);
-        if (authentication != null) {
-            return ResponseEntity.ok("Access granted to " + authentication.getName());
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-    }
 
     @PostMapping("/active")
     public ResponseEntity<String> sendOTPMail(@RequestParam String username , @RequestParam String email) throws MessagingException {
@@ -82,7 +48,7 @@ public class UserController {
 
 
     @PostMapping("/changePassword")
-    public Map changePassword(@RequestParam String email, @RequestParam String password) {
+    public Map changePassword(@RequestParam String email,@RequestParam String password) {
         userService.changePassword(email , password);
 
         Map<String ,String> map = new HashMap<>();
@@ -92,7 +58,9 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteAccount")
-    public ResponseEntity<String> deleteAccount(@RequestParam String email) {
+    public ResponseEntity<String> deleteAccount() {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
         userService.deleteAccount(email);
         return ResponseEntity.ok("Account has been deleted");
     }

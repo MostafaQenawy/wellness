@@ -30,7 +30,7 @@ public class AuthService {
 		if (!passwordEncoder.matches(jwtRequestDto.getPassword(), user.getPassword())) {
 			throw new BaseApiExcepetions(String.format("Wrong password has been invoken"), HttpStatus.BAD_REQUEST);
 		}
-		String jwtToken = jwtTokenUtils.generateToken(user.getEmail() , user.getId());
+		String jwtToken = jwtTokenUtils.generateToken(user.getEmail() , user.getId() , user.getUsername());
 
 		return new JWTResponseDto(jwtToken);
 

@@ -78,7 +78,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         // Generate JWT token
-        String token = jwtTokenUtils.generateToken(user.getEmail(), user.getId());
+        String token = jwtTokenUtils.generateToken(user.getEmail(), user.getId() , user.getUsername());
 
         // ✅ Store token in session (or URL param)
         request.getSession().setAttribute("jwtToken", token);

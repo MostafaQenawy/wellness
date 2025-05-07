@@ -49,6 +49,7 @@ public class AuthFilter extends GenericFilterBean {
 
         if (jwtTokenHeader != null && securityContext.getAuthentication() == null) {
             String jwtToken = jwtTokenHeader.substring("Bearer ".length());
+            tokenUtil.setJwtToken(jwtToken);
             String Email = tokenUtil.getEmailFromToken(jwtToken);
             if (Email != null && tokenUtil.validateToken(jwtToken)) {;
                 User user =  userService.loadUserByEmail(Email);

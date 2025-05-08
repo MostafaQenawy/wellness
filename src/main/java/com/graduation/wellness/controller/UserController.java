@@ -21,17 +21,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class UserController {
 
-
     private UserService userService;
     private EmailService emailService;
-    private JwtTokenUtils jwtTokenUtils;
-
-    @PostMapping("/user")
-    public UserDto getUser() {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
-        return  userService.getUser(email);
-    }
 
     @PostMapping("/active")
     public Map<String ,String> sendOTPMail(@RequestParam String username , @RequestParam String email)
@@ -39,12 +30,10 @@ public class UserController {
         return emailService.verificationMail(username, email);
     }
 
-
     @PostMapping("/changePasswordRequest")
     public Map<String ,String> changePasswordMail(@RequestParam String email) throws MessagingException {
         return emailService.changePassswordMail(email);
     }
-
 
     @PostMapping("/changePassword")
     public Response changePassword(@RequestParam String email, @RequestParam String password) {
@@ -66,6 +55,4 @@ public class UserController {
     public Response updateAccount(User user) {
         return userService.updateAccount(user);
     }
-
-
 }

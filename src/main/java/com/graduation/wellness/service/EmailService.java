@@ -67,7 +67,7 @@ public class EmailService {
     }
 
 
-    public String changePassswordMail(String email ) throws MessagingException {
+    public Map<String, String> changePassswordMail(String email ) throws MessagingException {
         User user  = userService.loadUserByEmail(email);
         String code =generateActivationCode(6);
         sendEmail(
@@ -76,10 +76,13 @@ public class EmailService {
                 EmailTemplateName.CHANGE_PASSWORD,
                 code
         );
-        return code;
+
+        Map<String ,String> map = new HashMap<>();
+        map.put("otp" , code);
+        return map;
     }
 
-    public String verificationMail(String username , String email ) throws MessagingException {
+    public Map<String, String> verificationMail(String username , String email ) throws MessagingException {
         String code =generateActivationCode(6);
         sendEmail(
                 email,
@@ -87,7 +90,9 @@ public class EmailService {
                 EmailTemplateName.ACTIVATE_ACCOUNT,
                 code
         );
-        return code;
+        Map<String ,String> map = new HashMap<>();
+        map.put("otp" , code);
+        return map;
     }
 
 

@@ -7,13 +7,11 @@ import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@Slf4j
 @AllArgsConstructor
 public class UserController {
 

@@ -2,9 +2,11 @@ package com.graduation.wellness.service;
 
 import com.graduation.wellness.exception.BaseApiExcepetions;
 import com.graduation.wellness.mapper.UserMapper;
+import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.UserDto;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.repository.UserRepo;
+import com.graduation.wellness.security.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +30,11 @@ public class UserService {
 
     private final RoleService roleService;
 
+    private final JwtTokenUtils jwtTokenUtils;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Map<String, String>  save(User user) {
+    public Response save(User user) {
         if(user.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -41,10 +43,12 @@ public class UserService {
         }
         user.setRole(roleService.findByName("ROLE_USER"));
         userRepo.save(user);
-        Map<String ,String> map = new HashMap<>();
-        map.put("status" , "success");
-        map.put("message" ,"User had been added successfully!");
-        return map;
+        return new Response("success" ,"User had been added successfully!");
+    }
+
+    public UserDto getUser(String email) {
+        User user = userRepo.findByEmail(email);
+        return userMapper.Map(user);
     }
 
     public User getGoogleUser(String idToken) {
@@ -94,17 +98,31 @@ public class UserService {
         }
     }
 
-    public void changePassword(String email, String password) {
+    public Response changePassword(String email, String password) {
         User user = loadUserByEmail(email);
         if(password != null) {
             user.setPassword(passwordEncoder.encode(password));
         }
         userRepo.save(user);
+        return new Response("success" ,"Password has been changed successfully!");
+    }
+
+    public Response changePasswordInternal(String curPassword , String newPassword) {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
+        User user = loadUserByEmail(email);
+        if (!passwordEncoder.matches(curPassword, user.getPassword())) {
+            throw new BaseApiExcepetions(String.format("Wrong password has been invoken"), HttpStatus.BAD_REQUEST);
+        }
+        if(newPassword != null) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+        userRepo.save(user);
+        return new Response("success" ,"Password has been changed successfully!");
     }
 
 
     public UserDto findById(Long id){
-
         User user = userRepo.findById(id).orElseThrow(() -> new BaseApiExcepetions(String.format("No Record with user_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
         UserDto userDto = userMapper.Map(user);
         return userDto;
@@ -131,21 +149,22 @@ public class UserService {
         return (List<GrantedAuthority>) user.getAuthorities();
     }
 
-    public Map<String, String> updateAccount(User user) {
+    public Response updateAccount(User user) {
         User updatedUser = loadUserByEmail(user.getEmail());
         updatedUser.setFirstName(user.getFirstName());
         updatedUser.setLastName(user.getLastName());
 
         userRepo.save(updatedUser);
-        Map<String ,String> map = new HashMap<>();
-        map.put("status" , "success");
-        map.put("message" ,"User profile has been updated successfully!");
-        return map;
+        return new Response("success" ,"User profile has been updated successfully!");
     }
 
-    public void deleteAccount(String email) {
+    public Response deleteAccount() {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
         User user = loadUserByEmail(email);
         userRepo.delete(user);
+        return new Response("success" ,"User Account has been deleted successfully!");
+
     }
 
 }

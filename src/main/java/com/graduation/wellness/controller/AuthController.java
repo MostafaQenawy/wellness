@@ -1,6 +1,7 @@
 package com.graduation.wellness.controller;
 
 
+import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.security.JWTResponseDto;
 import com.graduation.wellness.security.JwtRequestDto;
@@ -69,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Map<String, String>  register (@Valid @RequestBody User user){
+    public Response register (@Valid @RequestBody User user){
         return userService.save(user);
     }
 

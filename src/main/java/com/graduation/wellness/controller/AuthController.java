@@ -1,5 +1,6 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.security.JWTResponseDto;
 import com.graduation.wellness.security.JwtRequestDto;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @AllArgsConstructor
 @RestController
 @Slf4j
@@ -23,6 +22,7 @@ public class AuthController {
     private UserService userService;
     private AuthService authService;
     private JwtTokenUtils jwtTokenUtils;
+
 
     @PostMapping("/login")
     public ResponseEntity<JWTResponseDto> login (@Valid @RequestBody JwtRequestDto jwtRequest){
@@ -63,7 +63,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Map register (@Valid @RequestBody User user){
+    public Response register (@Valid @RequestBody User user){
         return userService.save(user);
     }
 

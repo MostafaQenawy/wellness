@@ -1,6 +1,5 @@
 package com.graduation.wellness.exception;
 
-
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +22,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorDetails> handleApiExceptions(BaseApiExcepetions ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false).substring(4), ex.getStatusCode());
         return new ResponseEntity<>(errorDetails, ex.getStatusCode());
-
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -43,20 +41,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorDetails> handleIllegalArgumentExceptions(IllegalArgumentException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false).substring(4), HttpStatus.CONFLICT);
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
-
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getFieldError().getDefaultMessage(), request.getDescription(false).substring(4), (HttpStatus) status);
         return new ResponseEntity<>(errorDetails, status);
-
     }
+
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<ErrorDetails> handleSQLExceptions(SQLException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false).substring(4), HttpStatus.CONFLICT);
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
-
     }
 
     @ExceptionHandler(Exception.class)
@@ -65,9 +61,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
 
     }
-
-
-
-
-
 }

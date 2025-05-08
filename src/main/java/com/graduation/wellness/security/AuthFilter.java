@@ -40,9 +40,6 @@ public class AuthFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
         String jwtTokenHeader = ((HttpServletRequest) request).getHeader(HttpHeaders.AUTHORIZATION);
 
         final SecurityContext securityContext = SecurityContextHolder.getContext();

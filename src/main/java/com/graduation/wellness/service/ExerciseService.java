@@ -8,7 +8,6 @@ import com.graduation.wellness.model.entity.UserInfo;
 import com.graduation.wellness.repository.ExerciseRepository;
 import com.graduation.wellness.repository.UserInfoRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

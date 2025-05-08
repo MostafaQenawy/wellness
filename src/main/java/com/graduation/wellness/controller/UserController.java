@@ -1,27 +1,25 @@
 package com.graduation.wellness.controller;
-import com.graduation.wellness.security.JwtTokenUtils;
+import com.graduation.wellness.model.dto.Response;
+import com.graduation.wellness.model.dto.UserInfoDTO;
+import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.service.EmailService;
 import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.graduation.wellness.model.dto.UserInfoDTO;
 
-import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @RestController
+@Slf4j
 @AllArgsConstructor
 public class UserController {
 
     private UserService userService;
     private final UserInfoService userInfoService;
     private EmailService emailService;
-    private final JwtTokenUtils jwtTokenUtils;
 
     @GetMapping("/getUserInfo")
     public UserInfoDTO getUserInfoApi(){
@@ -29,33 +27,34 @@ public class UserController {
     }
 
     @PostMapping("/active")
-    public ResponseEntity<String> sendOTPMail(@RequestParam String username , @RequestParam String email) throws MessagingException {
-        String code=emailService.verificationMail(username, email);
-        return ResponseEntity.ok(code);
+    public Map<String ,String> sendOTPMail(@RequestParam String username , @RequestParam String email)
+            throws MessagingException {
+        return emailService.verificationMail(username, email);
     }
 
     @PostMapping("/changePasswordRequest")
-    public ResponseEntity<String> changePasswordMail(@RequestParam String email) throws MessagingException {
-        String code= emailService.changePassswordMail(email);
-
-        return ResponseEntity.ok(code);
+    public Map<String ,String> changePasswordMail(@RequestParam String email) throws MessagingException {
+        return emailService.changePassswordMail(email);
     }
 
     @PostMapping("/changePassword")
-    public Map changePassword(@RequestParam String email,@RequestParam String password) {
-        userService.changePassword(email , password);
+    public Response changePassword(@RequestParam String email, @RequestParam String password) {
+        return userService.changePassword(email , password);
+    }
 
-        Map<String ,String> map = new HashMap<>();
-        map.put("status" , "success");
-        map.put("message" ,"Password has been changed successfully!");
-        return map;
+    @PostMapping("/changePasswordInternal")
+    public Response changePasswordInternal
+            (@RequestParam String curPassword,@RequestParam String newPassword) {
+        return userService.changePasswordInternal(curPassword, newPassword);
     }
 
     @DeleteMapping("/deleteAccount")
-    public ResponseEntity<String> deleteAccount() {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
-        userService.deleteAccount(email);
-        return ResponseEntity.ok("Account has been deleted");
+    public Response deleteAccount() {
+        return userService.deleteAccount();
+    }
+
+    @DeleteMapping("/updateAccount")
+    public Response updateAccount(User user) {
+        return userService.updateAccount(user);
     }
 }

@@ -1,6 +1,5 @@
 package com.graduation.wellness.service;
 
-
 import com.graduation.wellness.model.enums.EmailTemplateName;
 import com.graduation.wellness.model.entity.User;
 import jakarta.mail.MessagingException;

@@ -16,7 +16,6 @@ public class UserWorkoutPlanMapper {
         List<UserPlanWeekDTO> dayDTOs = plan.getWeeks().stream()
                 .map(UserWorkoutPlanMapper::toWeekDTO)
                 .toList();
-
         return new UserPlanDTO(plan.getId(), plan.getDaysPerWeek(), dayDTOs);
     }
 
@@ -24,7 +23,6 @@ public class UserWorkoutPlanMapper {
         List<UserPlanWeekDayDTO> dayDTOs = week.getDays().stream()
                 .map(UserWorkoutPlanMapper::toDayDTO)
                 .toList();
-
         return new UserPlanWeekDTO(week.getId(), week.getWeekNumber(), dayDTOs);
     }
 
@@ -32,7 +30,6 @@ public class UserWorkoutPlanMapper {
         List<UserPlanWeekDayExerciseDTO> exerciseDTOs = day.getExercises().stream()
                 .map(UserWorkoutPlanMapper::toExerciseDTO)
                 .toList();
-
         return new UserPlanWeekDayDTO(day.getId(), day.getDayNumber(), exerciseDTOs);
     }
 

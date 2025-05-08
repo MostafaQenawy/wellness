@@ -1,20 +1,16 @@
 package com.graduation.wellness.controller;
 import com.graduation.wellness.model.dto.Response;
-import com.graduation.wellness.model.dto.UserDto;
+import com.graduation.wellness.model.dto.UserInfoDTO;
 import com.graduation.wellness.model.entity.User;
-import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.EmailService;
+import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.HashMap;
 import java.util.Map;
-
 
 @RestController
 @Slf4j
@@ -22,7 +18,13 @@ import java.util.Map;
 public class UserController {
 
     private UserService userService;
+    private final UserInfoService userInfoService;
     private EmailService emailService;
+
+    @GetMapping("/getUserInfo")
+    public UserInfoDTO getUserInfoApi(){
+        return userInfoService.getUserInfo();
+    }
 
     @PostMapping("/active")
     public Map<String ,String> sendOTPMail(@RequestParam String username , @RequestParam String email)

@@ -6,8 +6,6 @@ import com.graduation.wellness.model.dto.RoleDto;
 import com.graduation.wellness.model.entity.Role;
 import com.graduation.wellness.repository.RoleRepo;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

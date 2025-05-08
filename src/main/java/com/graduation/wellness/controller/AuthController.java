@@ -1,6 +1,5 @@
 package com.graduation.wellness.controller;
 
-
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.security.JWTResponseDto;
@@ -8,16 +7,12 @@ import com.graduation.wellness.security.JwtRequestDto;
 import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.AuthService;
 import com.graduation.wellness.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-
 
 @AllArgsConstructor
 @RestController
@@ -44,9 +39,7 @@ public class AuthController {
 
        boolean exists=userService.isExist(fbUser.getEmail());
         if (!exists) {
-
             userService.save(fbUser); // Register new user
-
         }
 
         String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId() , fbUser.getUsername());
@@ -79,5 +72,4 @@ public class AuthController {
     public void returnNoFavicon() {
         // Returning nothing to prevent error
     }
-
 }

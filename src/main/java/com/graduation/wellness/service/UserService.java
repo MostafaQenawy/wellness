@@ -23,15 +23,10 @@ import java.util.List;
 public class UserService {
 
     private final UserMapper userMapper;
-
     private final PasswordEncoder passwordEncoder;
-
     private final UserRepo userRepo;
-
     private final RoleService roleService;
-
     private final JwtTokenUtils jwtTokenUtils;
-
     private final RestTemplate restTemplate = new RestTemplate();
 
     public Response save(User user) {
@@ -90,7 +85,6 @@ public class UserService {
             user.setLastName(lastName);
             user.setProvider("FACEBOOK");
             user.setProviderUserId(id);
-
             return user;
 
         } catch (Exception e) {
@@ -121,7 +115,6 @@ public class UserService {
         return new Response("success" ,"Password has been changed successfully!");
     }
 
-
     public UserDto findById(Long id){
         User user = userRepo.findById(id).orElseThrow(() -> new BaseApiExcepetions(String.format("No Record with user_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
         UserDto userDto = userMapper.Map(user);
@@ -129,7 +122,6 @@ public class UserService {
     }
 
     public List<User> findAll() {
-
         return userRepo.findAll();
     }
 
@@ -139,7 +131,6 @@ public class UserService {
             throw new BaseApiExcepetions(String.format("This Email not registered yet " , email), HttpStatus.NOT_FOUND);
         return user;
     }
-
 
     public boolean isExist(String email) {
         return userRepo.findByEmail(email) != null;
@@ -164,7 +155,5 @@ public class UserService {
         User user = loadUserByEmail(email);
         userRepo.delete(user);
         return new Response("success" ,"User Account has been deleted successfully!");
-
     }
-
 }

@@ -26,7 +26,6 @@ import static com.graduation.wellness.util.BMIClassifier.classifyBMI;
 @AllArgsConstructor
 @Table(name = "user_info")
 public class UserInfo {
-
     @Id
     private Long id;            // Same as user's ID
 

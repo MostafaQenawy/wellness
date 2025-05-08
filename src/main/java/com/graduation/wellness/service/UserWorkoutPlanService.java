@@ -2,15 +2,13 @@ package com.graduation.wellness.service;
 
 import com.graduation.wellness.model.dto.*;
 import com.graduation.wellness.model.entity.*;
-import com.graduation.wellness.repository.UserPlanRep;
-import com.graduation.wellness.repository.UserPlanWeekDayExerciseRep;
-import com.graduation.wellness.repository.UserPlanWeekDayRep;
-import com.graduation.wellness.repository.UserPlanWeekRep;
+import com.graduation.wellness.repository.*;
+import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import com.graduation.wellness.model.enums.Gender;
 import com.graduation.wellness.util.UserWorkoutPlanMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,23 +16,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class UserWorkoutPlanService {
 
     private final UserPlanRep userPlanRep;
     private final UserPlanWeekRep userPlanWeekRep;
     private final UserPlanWeekDayRep userPlanWeekDayRep;
     private final UserPlanWeekDayExerciseRep userPlanWeekDayExerciseRep;
-
-    @Autowired
-    public UserWorkoutPlanService(UserPlanRep userPlanRep
-            , UserPlanWeekRep userPlanWeekRep
-            , UserPlanWeekDayRep userPlanWeekDayRep
-            , UserPlanWeekDayExerciseRep userPlanWeekDayExerciseRep) {
-        this.userPlanRep = userPlanRep;
-        this.userPlanWeekRep = userPlanWeekRep;
-        this.userPlanWeekDayRep = userPlanWeekDayRep;
-        this.userPlanWeekDayExerciseRep = userPlanWeekDayExerciseRep;
-    }
+    private final ExerciseRepository exerciseRepository;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @Transactional
     public void assignPlanToUser(UserInfo userInfo, WorkoutPlanDTO templatePlan) {
@@ -78,10 +68,9 @@ public class UserWorkoutPlanService {
                             .exerciseDone(false) // default to false
                             .sets(goalSets)
                             .build();
-                    if(isMale){
+                    if (isMale) {
                         userExercise.setVideoURL(exerciseDTO.getExercise().getMaleVideoUrl());
-                    }
-                    else{
+                    } else {
                         userExercise.setVideoURL(exerciseDTO.getExercise().getFemaleVideoUrl());
                     }
 
@@ -104,9 +93,12 @@ public class UserWorkoutPlanService {
     }
 
 
-    public void assignDoneToExercise(long userID, long exerciseID, long dayID, long weekID) {
-        Optional<UserPlanWeekDayExercise> optionalExercise =
-                userPlanWeekDayExerciseRep.findByPlanWeekDay_IdAndExercise_IdAndPlanWeekDay_PlanWeek_IdAndPlanWeekDay_PlanWeek_Plan_UserInfo_Id
+    public void assignDoneToExercise(long exerciseID, long dayID, long weekID) {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
+        Optional<UserPlanWeekDayExercise> optionalExercise = userPlanWeekDayExerciseRep
+                .findByPlanWeekDay_IdAndExercise_IdAndPlanWeekDay_PlanWeek_IdAndPlanWeekDay_PlanWeek_Plan_UserInfo_Id
                         (dayID, exerciseID, weekID, userID);
 
         if (optionalExercise.isPresent()) {
@@ -118,14 +110,31 @@ public class UserWorkoutPlanService {
         }
     }
 
-    public UserPlanDTO getUserWorkoutPlanByUserId(long userId) {
-        UserPlan plan = userPlanRep.findByUserInfoId(userId)
-                .orElseThrow(() -> new RuntimeException("Workout plan not found for user ID: " + userId));
+    public UserPlanDTO getUserWorkoutPlanByUserId() {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
+        UserPlan plan = userPlanRep.findByUserInfoId(userID)
+                .orElseThrow(() -> new RuntimeException("Workout plan not found for user ID: " + userID));
 
         return UserWorkoutPlanMapper.toDTO(plan);
     }
 
+    public void swapExerciseInPlan(Long weekId, Long dayId, Long oldExerciseId, Long newExerciseId) {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
+        UserPlanWeekDayExercise userExercise;
+        Optional<UserPlanWeekDayExercise> optionalUserExercise = userPlanWeekDayExerciseRep
+                .findByPlanWeekDay_IdAndExercise_IdAndPlanWeekDay_PlanWeek_IdAndPlanWeekDay_PlanWeek_Plan_UserInfo_Id(
+                        dayId, oldExerciseId, weekId, userID);
+
+        if (optionalUserExercise.isPresent()) {
+            userExercise = optionalUserExercise.get();
+            Exercise newExercise = exerciseRepository.findById(newExerciseId)
+                    .orElseThrow(() -> new IllegalArgumentException("New exercise not found"));
+            userExercise.setExercise(newExercise);
+            userPlanWeekDayExerciseRep.save(userExercise);
+        } else throw new IllegalArgumentException("Exercise not found in user's plan");
+    }
 }
-
-
-

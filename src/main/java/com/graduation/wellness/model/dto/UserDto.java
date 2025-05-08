@@ -37,11 +37,8 @@ public class UserDto {
     @Size(min = 8 , message = "password minLength is 8")
     private String password;
 
-    public UserDto(String firstName, String lastName, String email, String password) {
+    public UserDto(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-
     }
 }

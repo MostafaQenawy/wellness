@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.graduation.wellness.model.dto.UserInfoDTO;
 
-
-
 @Service
 @AllArgsConstructor
 public class UserInfoService {

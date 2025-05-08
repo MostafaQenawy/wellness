@@ -1,6 +1,5 @@
 package com.graduation.wellness.controller;
 
-import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.ExerciseService;
 import com.graduation.wellness.model.entity.Exercise;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,5 @@
 package com.graduation.wellness.security;
 
-import com.graduation.wellness.model.entity.User;
-import com.graduation.wellness.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,15 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import java.security.interfaces.RSAPublicKey;
-import java.util.concurrent.TimeUnit;
-
 
 @Component
 @Slf4j

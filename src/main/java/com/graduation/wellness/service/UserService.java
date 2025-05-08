@@ -104,7 +104,6 @@ public class UserService {
 
 
     public UserDto findById(Long id){
-
         User user = userRepo.findById(id).orElseThrow(() -> new BaseApiExcepetions(String.format("No Record with user_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
         UserDto userDto = userMapper.Map(user);
         return userDto;

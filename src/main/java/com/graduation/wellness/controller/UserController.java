@@ -1,36 +1,32 @@
 package com.graduation.wellness.controller;
 import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.EmailService;
+import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import com.graduation.wellness.model.dto.UserInfoDTO;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-@RestController
 @Slf4j
+@RestController
 @AllArgsConstructor
 public class UserController {
 
-
     private UserService userService;
+    private final UserInfoService userInfoService;
     private EmailService emailService;
-    private JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenUtils jwtTokenUtils;
 
+    @GetMapping("/getUserInfo")
+    public UserInfoDTO getUserInfoApi(){
+        return userInfoService.getUserInfo();
+    }
 
     @PostMapping("/active")
     public ResponseEntity<String> sendOTPMail(@RequestParam String username , @RequestParam String email) throws MessagingException {
@@ -38,14 +34,12 @@ public class UserController {
         return ResponseEntity.ok(code);
     }
 
-
     @PostMapping("/changePasswordRequest")
     public ResponseEntity<String> changePasswordMail(@RequestParam String email) throws MessagingException {
         String code= emailService.changePassswordMail(email);
 
         return ResponseEntity.ok(code);
     }
-
 
     @PostMapping("/changePassword")
     public Map changePassword(@RequestParam String email,@RequestParam String password) {
@@ -64,5 +58,4 @@ public class UserController {
         userService.deleteAccount(email);
         return ResponseEntity.ok("Account has been deleted");
     }
-
 }

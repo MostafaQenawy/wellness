@@ -18,8 +18,8 @@ public class HomeController {
         this.exerciseService = exerciseService;
     }
 
-    @GetMapping("muscleExercises/{targetMuscle}")
-    public List<Exercise> getMuscleExercisesApi(@PathVariable String targetMuscle){
+    @GetMapping("muscleExercises")
+    public List<Exercise> getMuscleExercisesApi(@RequestParam String targetMuscle){
         return exerciseService.getMuscleExercises(targetMuscle);
     }
 }

@@ -1,22 +1,21 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.ExerciseService;
 import com.graduation.wellness.model.entity.Exercise;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/favourite")
 public class FavouriteController {
     private final ExerciseService exerciseService;
 
-    public FavouriteController(ExerciseService exerciseService) {
-        this.exerciseService = exerciseService;
-    }
-
-    @GetMapping("getFavouriteExercises/{userID}")
-    public List<Exercise> getFavouriteExercises(@PathVariable long userID){
-        return exerciseService.getFavouriteExercises(userID);
+    @GetMapping("getFavouriteExercises")
+    public List<Exercise> getFavouriteExercises(){
+        return exerciseService.getFavouriteExercises();
     }
 }

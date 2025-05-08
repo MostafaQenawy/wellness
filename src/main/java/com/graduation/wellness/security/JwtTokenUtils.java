@@ -61,6 +61,10 @@ public class JwtTokenUtils {
 				.signWith(SignatureAlgorithm.HS512, TOKEN_SECRET).compact();
 	}
 
+	public Long getIdFromToken(String token) {
+		Claims claims = getClaims(token);
+		return claims.get("userId", Long.class);
+	}
 
 	public String getEmailFromToken(String token) {
 		Claims claims = getClaims(token);

@@ -5,7 +5,7 @@ import com.graduation.wellness.model.entity.UserInfo;
 import com.graduation.wellness.repository.UserInfoRepository;
 import com.graduation.wellness.repository.UserRepo;
 import com.graduation.wellness.security.JwtTokenUtils;
-import com.graduation.wellness.util.UserInfoMapper;
+import com.graduation.wellness.mapper.UserInfoMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.graduation.wellness.model.dto.UserInfoDTO;

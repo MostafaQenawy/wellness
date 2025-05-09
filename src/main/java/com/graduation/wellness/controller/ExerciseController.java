@@ -1,5 +1,6 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.SwapApiBodyReq;
 import com.graduation.wellness.service.ExerciseService;
 import com.graduation.wellness.service.UserWorkoutPlanService;
@@ -25,8 +26,8 @@ public class ExerciseController {
     }
 
     @PostMapping("/setSwap")
-    public void setSwapExerciseApi(@RequestBody SwapApiBodyReq swapApiBodyReq) {
-        userWorkoutPlanService.swapExerciseInPlan(
+    public Response setSwapExerciseApi(@RequestBody SwapApiBodyReq swapApiBodyReq) {
+        return userWorkoutPlanService.swapExerciseInPlan(
                 swapApiBodyReq.weekID(),
                 swapApiBodyReq.dayID(),
                 swapApiBodyReq.oldExerciseID(),
@@ -34,20 +35,20 @@ public class ExerciseController {
     }
 
     @GetMapping("/done")
-    public void exerciseDoneApi(@RequestBody DoneApiBodyReq doneApiBodyReq) {
-        userWorkoutPlanService.assignDoneToExercise(
+    public Response exerciseDoneApi(@RequestBody DoneApiBodyReq doneApiBodyReq) {
+        return userWorkoutPlanService.assignDoneToExercise(
                 doneApiBodyReq.exerciseID(),
                 doneApiBodyReq.dayID(),
                 doneApiBodyReq.weekID());
     }
 
     @GetMapping("/addToFavourite")
-    public void addExerciseToFavoriteApi(@RequestParam Long exerciseID) {
-        exerciseService.addExerciseToFavourites(exerciseID);
+    public Response addExerciseToFavoriteApi(@RequestParam Long exerciseID) {
+        return exerciseService.addExerciseToFavourites(exerciseID);
     }
 
     @GetMapping("/removeFromFavourite")
-    public void removeExerciseFromFavoriteApi(@RequestParam Long exerciseID) {
-        exerciseService.removeExerciseFromFavourites(exerciseID);
+    public Response removeExerciseFromFavoriteApi(@RequestParam Long exerciseID) {
+        return exerciseService.removeExerciseFromFavourites(exerciseID);
     }
 }

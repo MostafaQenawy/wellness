@@ -7,7 +7,7 @@ import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import com.graduation.wellness.model.enums.Gender;
-import com.graduation.wellness.util.UserWorkoutPlanMapper;
+import com.graduation.wellness.mapper.UserWorkoutPlanMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +93,7 @@ public class UserWorkoutPlanService {
     }
 
 
-    public void assignDoneToExercise(long exerciseID, long dayID, long weekID) {
+    public Response assignDoneToExercise(long exerciseID, long dayID, long weekID) {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
@@ -105,6 +105,8 @@ public class UserWorkoutPlanService {
             UserPlanWeekDayExercise exercise = optionalExercise.get();
             exercise.setExerciseDone(true);
             userPlanWeekDayExerciseRep.save(exercise); // This may be optional if inside @Transactional
+            return new Response("success" ,"Exercise labeled done successfully!");
+
         } else {
             throw new EntityNotFoundException("Exercise not found for this user, day, and exercise ID");
         }
@@ -120,7 +122,7 @@ public class UserWorkoutPlanService {
         return UserWorkoutPlanMapper.toDTO(plan);
     }
 
-    public void swapExerciseInPlan(Long weekId, Long dayId, Long oldExerciseId, Long newExerciseId) {
+    public Response swapExerciseInPlan(Long weekId, Long dayId, Long oldExerciseId, Long newExerciseId) {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
@@ -135,6 +137,14 @@ public class UserWorkoutPlanService {
                     .orElseThrow(() -> new IllegalArgumentException("New exercise not found"));
             userExercise.setExercise(newExercise);
             userPlanWeekDayExerciseRep.save(userExercise);
+            return new Response("success" ,"Exercise swapped successfully!");
         } else throw new IllegalArgumentException("Exercise not found in user's plan");
     }
+
+/*    public UserExerciseDTO getUserExercise(Long exerciseId) {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
+        UserExerciseDTO userExerciseDTO
+    }*/
 }

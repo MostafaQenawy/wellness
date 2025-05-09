@@ -1,5 +1,6 @@
 package com.graduation.wellness.service;
 
+import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class ExerciseService {
     }
 
     @Transactional
-    public void addExerciseToFavourites(Long exerciseId) {
+    public Response addExerciseToFavourites(Long exerciseId) {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
@@ -45,11 +46,15 @@ public class ExerciseService {
         if (!user.getFavouriteExercises().contains(exercise)) {
             user.getFavouriteExercises().add(exercise);
             userInfoRepository.save(user);
+            return new Response("success" ,"Favourite Exercise added successfully!");
+        }
+        else {
+            return new Response("Failed" ,"Exercise already added at favourites!");
         }
     }
 
     @Transactional
-    public void removeExerciseFromFavourites(Long exerciseId) {
+    public Response removeExerciseFromFavourites(Long exerciseId) {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
@@ -59,8 +64,14 @@ public class ExerciseService {
         Exercise exercise = exerciseRepository.findById(exerciseId)
                 .orElseThrow(() -> new EntityNotFoundException("Exercise not found"));
 
-        user.getFavouriteExercises().remove(exercise);
-        userInfoRepository.save(user);
+        if (user.getFavouriteExercises().contains(exercise)) {
+            user.getFavouriteExercises().remove(exercise);
+            userInfoRepository.save(user);
+            return new Response("success" ,"Favourite Exercise removed successfully!");
+        }
+        else {
+            return new Response("Failed" ,"Exercise already removed from favourites!");
+        }
     }
 
     public List<Exercise> getFavouriteExercises() {

@@ -1,4 +1,4 @@
-package com.graduation.wellness.util;
+package com.graduation.wellness.mapper;
 
 import com.graduation.wellness.model.dto.UserInfoDTO;
 import com.graduation.wellness.model.entity.User;

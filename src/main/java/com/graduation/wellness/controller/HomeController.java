@@ -19,7 +19,7 @@ public class HomeController {
     }
 
     @GetMapping("muscleExercises")
-    public List<Exercise> getMuscleExercisesApi(@RequestParam String targetMuscle){
-        return exerciseService.getMuscleExercises(targetMuscle);
+    public List<Exercise> getMuscleExercisesApi(@RequestParam String regionMuscle){
+        return exerciseService.getMuscleExercises(regionMuscle);
     }
 }

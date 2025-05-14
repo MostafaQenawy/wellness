@@ -28,8 +28,8 @@ public class ExerciseService {
         return exerciseRepository.findBySimilarGroupId(exercise.getSimilarGroupId());
     }
 
-    public List<Exercise> getMuscleExercises(String targetMuscle) {
-        return exerciseRepository.findByTargetMuscle(targetMuscle);
+    public List<Exercise> getMuscleExercises(String regionMuscle) {
+        return exerciseRepository.findByRegionMuscle(regionMuscle);
     }
 
     @Transactional

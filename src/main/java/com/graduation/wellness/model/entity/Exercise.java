@@ -18,8 +18,11 @@ public class Exercise {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "region_muscle", nullable = false)
+    private String regionMuscle;
 
     @Column(name = "target_muscle", nullable = false)
     private String targetMuscle;

@@ -20,9 +20,4 @@ public class UserWorkoutPlanController {
         UserPlanDTO userWorkoutPlan = userWorkoutPlanService.getUserWorkoutPlanByUserId();
         return ResponseEntity.ok(userWorkoutPlan);
     }
-
-/*    @GetMapping(value = "/getUserExercise")
-    public UserExerciseDTO getUserExerciseApi (long exerciseID){
-
-    }*/
 }

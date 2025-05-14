@@ -19,6 +19,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserWorkoutPlanService {
 
+    private final WorkoutPlanService workoutPlanService;
     private final UserPlanRep userPlanRep;
     private final UserPlanWeekRep userPlanWeekRep;
     private final UserPlanWeekDayRep userPlanWeekDayRep;
@@ -27,13 +28,14 @@ public class UserWorkoutPlanService {
     private final JwtTokenUtils jwtTokenUtils;
 
     @Transactional
-    public void assignPlanToUser(UserInfo userInfo, WorkoutPlanDTO templatePlan) {
+    public void assignPlanToUser(UserInfo userInfo) {
+        WorkoutPlanDTO templatePlan = workoutPlanService.getPlanToUser(userInfo);
         boolean isMale = userInfo.getGender() == Gender.MALE;
 
         String goalSets = switch (userInfo.getGoal()) {
             case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
             case INCREASE_STRENGTH -> "Sets: 3 - Reps 3 ~ 6";
-            case MUSCLE_GAIN -> "Sets: 3 - Reps 8 ~ 12";
+            case BUILD_MUSCLE -> "Sets: 3 - Reps 8 ~ 12";
         };
 
         UserPlan userPlan = UserPlan.builder()
@@ -140,11 +142,4 @@ public class UserWorkoutPlanService {
             return new Response("success" ,"Exercise swapped successfully!");
         } else throw new IllegalArgumentException("Exercise not found in user's plan");
     }
-
-/*    public UserExerciseDTO getUserExercise(Long exerciseId) {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
-
-        UserExerciseDTO userExerciseDTO
-    }*/
 }

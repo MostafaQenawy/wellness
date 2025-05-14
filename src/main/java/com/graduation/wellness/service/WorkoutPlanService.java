@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -25,21 +26,23 @@ public class WorkoutPlanService {
     }
 
     public WorkoutPlanDTO getPlanToUser(UserInfo userInfo) {
-        Optional<WorkoutPlan> bestTemplate = findBestTemplate(userInfo);
-
-        if (bestTemplate.isEmpty()) {
-            log.info("No best template");
-            return null;
-        }
-        WorkoutPlan workoutPlan = bestTemplate.get();
-        return mapToDto(workoutPlan);
+        return findBestTemplate(userInfo)
+                .map(this::mapToDto)
+                .orElseThrow(() -> new NoSuchElementException("No workout plan match this user"));
     }
 
+
     private Optional<WorkoutPlan> findBestTemplate(UserInfo userInfo) {
-        // If an exact match is found, return it
-        return workoutPlanRepository.findByAllAttributesIgnoreCase(userInfo.getGender().name()
-                , userInfo.getGoal().name(), userInfo.getDaysPerWeek()
-        );
+        return switch (userInfo.getGoal()) {
+            case WEIGHT_CUT, BUILD_MUSCLE -> workoutPlanRepository.findByAllAttributesIgnoreCase(
+                    userInfo.getGender().name(),
+                    "WEIGHT_CUT",
+                    userInfo.getDaysPerWeek());
+            case INCREASE_STRENGTH -> workoutPlanRepository.findByAllAttributesIgnoreCase(
+                    userInfo.getGender().name(),
+                    "INCREASE_STRENGTH",
+                    userInfo.getDaysPerWeek());
+        };
     }
 
     public WorkoutPlanDTO mapToDto(WorkoutPlan plan) {

@@ -13,6 +13,7 @@ public class ExerciseMapper {
                 exercise.getDescription(),
                 exercise.getRegionMuscle(),
                 exercise.getTargetMuscle(),
+                exercise.getEquipmentType(),
                 exercise.getDifficulty(),
                 sets,
                 exercise.getImageUrl(),

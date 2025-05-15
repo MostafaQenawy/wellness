@@ -1,6 +1,9 @@
 package com.graduation.wellness.service;
 
+import com.graduation.wellness.mapper.ExerciseMapper;
+import com.graduation.wellness.model.dto.ExerciseDTO;
 import com.graduation.wellness.model.dto.Response;
+import com.graduation.wellness.model.enums.Gender;
 import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -12,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,8 +32,31 @@ public class ExerciseService {
         return exerciseRepository.findBySimilarGroupId(exercise.getSimilarGroupId());
     }
 
-    public List<Exercise> getMuscleExercises(String regionMuscle) {
-        return exerciseRepository.findByRegionMuscle(regionMuscle);
+    public List<ExerciseDTO> getMuscleExercises(String regionMuscle) {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
+        Optional<UserInfo> userInfo = userInfoRepository.findById(userID);
+
+        boolean isMale = userInfo.get().getGender() == Gender.MALE;
+
+        String goalSets = switch (userInfo.get().getGoal()) {
+            case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
+            case INCREASE_STRENGTH -> "Sets: 3 - Reps 3 ~ 6";
+            case BUILD_MUSCLE -> "Sets: 3 - Reps 8 ~ 12";
+        };
+
+        List<Exercise> exercises = exerciseRepository.findByRegionMuscle(regionMuscle);
+
+        return exercises.stream()
+                .map(exercise -> {
+                    if (isMale) {
+                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getMaleVideoUrl(), goalSets);
+                    } else {
+                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getFemaleVideoUrl(), goalSets);
+                    }
+                })
+                .toList();
     }
 
     @Transactional
@@ -46,10 +73,9 @@ public class ExerciseService {
         if (!user.getFavouriteExercises().contains(exercise)) {
             user.getFavouriteExercises().add(exercise);
             userInfoRepository.save(user);
-            return new Response("success" ,"Favourite Exercise added successfully!");
-        }
-        else {
-            return new Response("Failed" ,"Exercise already added at favourites!");
+            return new Response("success", "Favourite Exercise added successfully!");
+        } else {
+            return new Response("Failed", "Exercise already added at favourites!");
         }
     }
 
@@ -67,10 +93,9 @@ public class ExerciseService {
         if (user.getFavouriteExercises().contains(exercise)) {
             user.getFavouriteExercises().remove(exercise);
             userInfoRepository.save(user);
-            return new Response("success" ,"Favourite Exercise removed successfully!");
-        }
-        else {
-            return new Response("Failed" ,"Exercise already removed from favourites!");
+            return new Response("success", "Favourite Exercise removed successfully!");
+        } else {
+            return new Response("Failed", "Exercise already removed from favourites!");
         }
     }
 

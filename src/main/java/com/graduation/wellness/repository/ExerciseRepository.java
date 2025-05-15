@@ -10,7 +10,5 @@ import java.util.List;
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> findBySimilarGroupId(Integer similarGroupId);
 
-    List<Exercise> findByTargetMuscle(String targetMuscle);
-
     List<Exercise> findByRegionMuscle(String regionMuscle);
 }

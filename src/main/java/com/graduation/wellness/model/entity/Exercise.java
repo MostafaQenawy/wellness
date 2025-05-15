@@ -31,10 +31,10 @@ public class Exercise {
     private String difficulty;
 
     @Column(name = "equipment_type", nullable = false)
-    private String equipment_type;
+    private String equipmentType;
 
     @Column(name = "image_url", nullable = false)
-    private String image_url;
+    private String imageUrl;
 
     @Column(name = "male_video_url", nullable = false)
     private String maleVideoUrl;

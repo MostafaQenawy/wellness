@@ -1,5 +1,6 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.model.dto.ExerciseDTO;
 import com.graduation.wellness.service.ExerciseService;
 import com.graduation.wellness.model.entity.Exercise;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class HomeController {
     }
 
     @GetMapping("muscleExercises")
-    public List<Exercise> getMuscleExercisesApi(@RequestParam String regionMuscle){
+    public List<ExerciseDTO> getMuscleExercisesApi(@RequestParam String regionMuscle){
         return exerciseService.getMuscleExercises(regionMuscle);
     }
 }

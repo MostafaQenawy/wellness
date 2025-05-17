@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 public class SignUpController {
     private final UserRegistrationService userRegistrationService;
 
-    @GetMapping("/save")
+/*    @GetMapping("/save")
     public Response saveUserDataApi(@RequestBody UserInfo userInfo, @RequestParam long userID) {
         return userRegistrationService.registerUserAndAssignPlan(userInfo, userID);
-    }
+    }*/
 }

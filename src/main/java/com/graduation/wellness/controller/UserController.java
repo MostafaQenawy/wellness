@@ -25,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping("/active")
-    public Map<String ,String> sendOTPMail(@RequestParam String username , @RequestParam String email)
+    public Map<String ,String> sendOTPMail(@RequestParam String userName, @RequestParam String email)
             throws MessagingException {
-        return emailService.verificationMail(username, email);
+        return emailService.verificationMail(userName, email);
     }
 
     @PostMapping("/changePasswordRequest")

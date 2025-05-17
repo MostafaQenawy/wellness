@@ -2,10 +2,12 @@ package com.graduation.wellness.controller;
 
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
+import com.graduation.wellness.model.entity.UserInfo;
 import com.graduation.wellness.security.JWTResponseDto;
 import com.graduation.wellness.security.JwtRequestDto;
 import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.AuthService;
+import com.graduation.wellness.service.UserRegistrationService;
 import com.graduation.wellness.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ public class AuthController {
     private UserService userService;
     private AuthService authService;
     private JwtTokenUtils jwtTokenUtils;
+    private final UserRegistrationService userRegistrationService;
 
 
     @PostMapping("/login")
@@ -65,6 +68,11 @@ public class AuthController {
     @PostMapping("/register")
     public Response register (@Valid @RequestBody User user){
         return userService.save(user);
+    }
+
+    @PostMapping("/saveUserInfo")
+    public Response saveUserInfoApi (@Valid @RequestBody UserInfo userInfo, @RequestParam String userEmail){
+        return userRegistrationService.registerUserAndAssignPlan(userInfo, userEmail);
     }
 
     @GetMapping("favicon.ico")

@@ -14,8 +14,8 @@ public class UserRegistrationService {
     private final UserWorkoutPlanService userWorkoutPlanService;
 
     @Transactional
-    public Response registerUserAndAssignPlan(UserInfo userInfo, long userID) {
-        userInfoService.saveUserData(userInfo, userID);
+    public Response registerUserAndAssignPlan(UserInfo userInfo, String userEmail) {
+        userInfoService.saveUserData(userInfo, userEmail);
         userWorkoutPlanService.assignPlanToUser(userInfo);
         return new Response("success" ,"User registered successfully!");
     }

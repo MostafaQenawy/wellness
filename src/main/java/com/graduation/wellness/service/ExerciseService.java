@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -25,22 +24,47 @@ public class ExerciseService {
     private final JwtTokenUtils jwtTokenUtils;
 
 
-    public List<Exercise> getSimilarExercises(long exerciseID) {
+    public List<ExerciseDTO> getSimilarExercises(long exerciseID) {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
         Exercise exercise = exerciseRepository.findById(exerciseID)
                 .orElseThrow(() -> new IllegalArgumentException("Exercise with ID " + exerciseID + " not found"));
 
-        return exerciseRepository.findBySimilarGroupId(exercise.getSimilarGroupId());
+        UserInfo userInfo = userInfoRepository.findById(userID)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isMale = userInfo.getGender() == Gender.MALE;
+
+        String goalSets = switch (userInfo.getGoal()) {
+            case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
+            case INCREASE_STRENGTH -> "Sets: 3 - Reps 3 ~ 6";
+            case BUILD_MUSCLE -> "Sets: 3 - Reps 8 ~ 12";
+        };
+
+        List<Exercise> exercises = exerciseRepository.findBySimilarGroupId(exercise.getSimilarGroupId());
+
+        return exercises.stream()
+                .map(ex -> {
+                    if (isMale) {
+                        return ExerciseMapper.toExerciseDTO(ex, ex.getMaleVideoUrl(), goalSets);
+                    } else {
+                        return ExerciseMapper.toExerciseDTO(ex, ex.getFemaleVideoUrl(), goalSets);
+                    }
+                })
+                .toList();
     }
 
     public List<ExerciseDTO> getMuscleExercises(String regionMuscle) {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
-        Optional<UserInfo> userInfo = userInfoRepository.findById(userID);
+        UserInfo userInfo = userInfoRepository.findById(userID)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        boolean isMale = userInfo.get().getGender() == Gender.MALE;
+        boolean isMale = userInfo.getGender() == Gender.MALE;
 
-        String goalSets = switch (userInfo.get().getGoal()) {
+        String goalSets = switch (userInfo.getGoal()) {
             case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
             case INCREASE_STRENGTH -> "Sets: 3 - Reps 3 ~ 6";
             case BUILD_MUSCLE -> "Sets: 3 - Reps 8 ~ 12";
@@ -95,17 +119,39 @@ public class ExerciseService {
             userInfoRepository.save(user);
             return new Response("success", "Favourite Exercise removed successfully!");
         } else {
-            return new Response("Failed", "Exercise already removed from favourites!");
+            return new Response("Failed", "Exercise already not in favourites!");
         }
     }
 
-    public List<Exercise> getFavouriteExercises() {
+    public List<ExerciseDTO> getFavouriteExercises() {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
-        UserInfo user = userInfoRepository.findById(userID)
+        UserInfo userInfo = userInfoRepository.findById(userID)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return user.getFavouriteExercises();
+        if (userInfo.getFavouriteExercises().isEmpty()) {
+            throw new EntityNotFoundException("No favorite exercises found for this user");
+        }
+
+        boolean isMale = userInfo.getGender() == Gender.MALE;
+
+        String goalSets = switch (userInfo.getGoal()) {
+            case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
+            case INCREASE_STRENGTH -> "Sets: 3 - Reps 3 ~ 6";
+            case BUILD_MUSCLE -> "Sets: 3 - Reps 8 ~ 12";
+        };
+
+        List<Exercise> exercises = userInfo.getFavouriteExercises();
+
+        return exercises.stream()
+                .map(exercise -> {
+                    if (isMale) {
+                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getMaleVideoUrl(), goalSets);
+                    } else {
+                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getFemaleVideoUrl(), goalSets);
+                    }
+                })
+                .toList();
     }
 }

@@ -1,5 +1,6 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.model.dto.ExerciseDTO;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.SwapApiBodyReq;
 import com.graduation.wellness.service.ExerciseService;
@@ -21,7 +22,7 @@ public class ExerciseController {
     private final UserWorkoutPlanService userWorkoutPlanService;
 
     @GetMapping("/swap")
-    public List<Exercise> getSimilarExercisesApi(@RequestParam Long exerciseID) {
+    public List<ExerciseDTO> getSimilarExercisesApi(@RequestParam Long exerciseID) {
         return exerciseService.getSimilarExercises(exerciseID);
     }
 

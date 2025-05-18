@@ -1,7 +1,5 @@
 package com.graduation.wellness.controller;
 
-import com.graduation.wellness.model.dto.UserExerciseDTO;
-import com.graduation.wellness.model.entity.Exercise;
 import com.graduation.wellness.service.UserWorkoutPlanService;
 import com.graduation.wellness.model.dto.UserPlanDTO;
 import lombok.AllArgsConstructor;

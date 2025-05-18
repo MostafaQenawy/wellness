@@ -2,7 +2,6 @@ package com.graduation.wellness.controller;
 
 import com.graduation.wellness.model.dto.ExerciseDTO;
 import com.graduation.wellness.service.ExerciseService;
-import com.graduation.wellness.model.entity.Exercise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

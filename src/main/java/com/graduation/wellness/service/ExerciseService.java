@@ -135,7 +135,7 @@ public class ExerciseService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (userInfo.getFavouriteExercises().isEmpty()) {
-            throw new EntityNotFoundException("No favorite exercises found for this user");
+            return List.of();           // Return empty list instead of throwing
         }
 
         boolean isMale = userInfo.getGender() == Gender.MALE;

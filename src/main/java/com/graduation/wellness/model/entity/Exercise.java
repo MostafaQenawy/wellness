@@ -33,8 +33,11 @@ public class Exercise {
     @Column(name = "equipment_type", nullable = false)
     private String equipmentType;
 
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
+    @Column(name = "male_image_url", nullable = false)
+    private String maleImageUrl;
+
+    @Column(name = "female_image_url", nullable = false)
+    private String femaleImageUrl;
 
     @Column(name = "male_video_url", nullable = false)
     private String maleVideoUrl;

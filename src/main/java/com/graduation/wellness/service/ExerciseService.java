@@ -47,9 +47,11 @@ public class ExerciseService {
         return exercises.stream()
                 .map(ex -> {
                     if (isMale) {
-                        return ExerciseMapper.toExerciseDTO(ex, ex.getMaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (ex, ex.getMaleImageUrl(), ex.getMaleVideoUrl(), goalSets);
                     } else {
-                        return ExerciseMapper.toExerciseDTO(ex, ex.getFemaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (ex, ex.getFemaleImageUrl(), ex.getFemaleVideoUrl(), goalSets);
                     }
                 })
                 .toList();
@@ -75,9 +77,11 @@ public class ExerciseService {
         return exercises.stream()
                 .map(exercise -> {
                     if (isMale) {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getMaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getMaleImageUrl(), exercise.getMaleVideoUrl(), goalSets);
                     } else {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getFemaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getFemaleImageUrl(), exercise.getFemaleVideoUrl(), goalSets);
                     }
                 })
                 .toList();
@@ -147,9 +151,11 @@ public class ExerciseService {
         return exercises.stream()
                 .map(exercise -> {
                     if (isMale) {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getMaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getMaleImageUrl(), exercise.getMaleVideoUrl(), goalSets);
                     } else {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getFemaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getFemaleImageUrl(), exercise.getFemaleVideoUrl(), goalSets);
                     }
                 })
                 .toList();

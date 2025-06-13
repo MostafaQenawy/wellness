@@ -32,7 +32,4 @@ public class UserPlanWeekDayExercise {
 
     @Column(name = "sets", nullable = false)
     private String sets;
-
-    @Column(name = "video_url", nullable = false)
-    private String videoURL;
 }

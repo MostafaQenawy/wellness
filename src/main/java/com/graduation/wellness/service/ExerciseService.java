@@ -47,9 +47,11 @@ public class ExerciseService {
         return exercises.stream()
                 .map(ex -> {
                     if (isMale) {
-                        return ExerciseMapper.toExerciseDTO(ex, ex.getMaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (ex, ex.getMaleImageUrl(), ex.getMaleVideoUrl(), goalSets);
                     } else {
-                        return ExerciseMapper.toExerciseDTO(ex, ex.getFemaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (ex, ex.getFemaleImageUrl(), ex.getFemaleVideoUrl(), goalSets);
                     }
                 })
                 .toList();
@@ -75,9 +77,11 @@ public class ExerciseService {
         return exercises.stream()
                 .map(exercise -> {
                     if (isMale) {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getMaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getMaleImageUrl(), exercise.getMaleVideoUrl(), goalSets);
                     } else {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getFemaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getFemaleImageUrl(), exercise.getFemaleVideoUrl(), goalSets);
                     }
                 })
                 .toList();
@@ -131,7 +135,7 @@ public class ExerciseService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (userInfo.getFavouriteExercises().isEmpty()) {
-            throw new EntityNotFoundException("No favorite exercises found for this user");
+            return List.of();           // Return empty list instead of throwing
         }
 
         boolean isMale = userInfo.getGender() == Gender.MALE;
@@ -147,9 +151,11 @@ public class ExerciseService {
         return exercises.stream()
                 .map(exercise -> {
                     if (isMale) {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getMaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getMaleImageUrl(), exercise.getMaleVideoUrl(), goalSets);
                     } else {
-                        return ExerciseMapper.toExerciseDTO(exercise, exercise.getFemaleVideoUrl(), goalSets);
+                        return ExerciseMapper.toExerciseDTO
+                                (exercise, exercise.getFemaleImageUrl(), exercise.getFemaleVideoUrl(), goalSets);
                     }
                 })
                 .toList();

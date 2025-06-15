@@ -30,7 +30,6 @@ public class UserWorkoutPlanService {
     @Transactional
     public void assignPlanToUser(UserInfo userInfo) {
         WorkoutPlanDTO templatePlan = workoutPlanService.getPlanToUser(userInfo);
-        boolean isMale = userInfo.getGender() == Gender.MALE;
 
         String goalSets = switch (userInfo.getGoal()) {
             case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
@@ -70,11 +69,6 @@ public class UserWorkoutPlanService {
                             .exerciseDone(false) // default to false
                             .sets(goalSets)
                             .build();
-                    if (isMale) {
-                        userExercise.setVideoURL(exerciseDTO.getExercise().getMaleVideoUrl());
-                    } else {
-                        userExercise.setVideoURL(exerciseDTO.getExercise().getFemaleVideoUrl());
-                    }
 
                     userPlanWeekDayExerciseRep.save(userExercise);
                     userExercises.add(userExercise);
@@ -94,6 +88,15 @@ public class UserWorkoutPlanService {
         userPlanRep.save(userPlan); // Final save
     }
 
+    public UserPlanDTO getUserWorkoutPlanByUserId() {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+
+        UserPlan plan = userPlanRep.findByUserInfoId(userID)
+                .orElseThrow(() -> new RuntimeException("Workout plan not found for user ID: " + userID));
+
+        return UserWorkoutPlanMapper.toDTO(plan);
+    }
 
     public Response assignDoneToExercise(long exerciseID, long dayID, long weekID) {
         String jwtToken = jwtTokenUtils.getJwtToken();
@@ -112,16 +115,6 @@ public class UserWorkoutPlanService {
         } else {
             throw new EntityNotFoundException("Exercise not found for this user, day, and exercise ID");
         }
-    }
-
-    public UserPlanDTO getUserWorkoutPlanByUserId() {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
-
-        UserPlan plan = userPlanRep.findByUserInfoId(userID)
-                .orElseThrow(() -> new RuntimeException("Workout plan not found for user ID: " + userID));
-
-        return UserWorkoutPlanMapper.toDTO(plan);
     }
 
     public Response swapExerciseInPlan(Long weekId, Long dayId, Long oldExerciseId, Long newExerciseId) {

@@ -5,7 +5,7 @@ import com.graduation.wellness.model.entity.Exercise;
 
 public class ExerciseMapper {
 
-    public static ExerciseDTO toExerciseDTO(Exercise exercise, String videoUrl, String sets) {
+    public static ExerciseDTO toExerciseDTO(Exercise exercise, String imageUrl, String videoUrl, String sets) {
 
         return new ExerciseDTO(
                 exercise.getId(),
@@ -16,7 +16,7 @@ public class ExerciseMapper {
                 exercise.getEquipmentType(),
                 exercise.getDifficulty(),
                 sets,
-                exercise.getImageUrl(),
+                imageUrl,
                 videoUrl
         );
     }

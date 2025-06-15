@@ -3,12 +3,14 @@ package com.graduation.wellness.controller;
 import com.graduation.wellness.model.dto.ExerciseDTO;
 import com.graduation.wellness.service.ExerciseService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@PreAuthorize("hasRole('USER')")
 @RequestMapping("/favourite")
 public class FavouriteController {
     private final ExerciseService exerciseService;

@@ -7,6 +7,7 @@ import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ public class UserController {
     private final UserInfoService userInfoService;
     private EmailService emailService;
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/getUserInfo")
     public UserInfoDTO getUserInfoApi(){
         return userInfoService.getUserInfo();

@@ -1,19 +1,20 @@
 package com.graduation.wellness.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "exercises")
 public class Exercise {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id; // Primary Key
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;

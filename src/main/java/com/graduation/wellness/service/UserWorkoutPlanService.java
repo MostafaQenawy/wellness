@@ -6,7 +6,6 @@ import com.graduation.wellness.repository.*;
 import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import com.graduation.wellness.model.enums.Gender;
 import com.graduation.wellness.mapper.UserWorkoutPlanMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.graduation.wellness.util.GoalSetUtils.getGoalSets;
 
 @Service
 @AllArgsConstructor
@@ -31,11 +32,7 @@ public class UserWorkoutPlanService {
     public void assignPlanToUser(UserInfo userInfo) {
         WorkoutPlanDTO templatePlan = workoutPlanService.getPlanToUser(userInfo);
 
-        String goalSets = switch (userInfo.getGoal()) {
-            case WEIGHT_CUT -> "Sets: 3 - Reps 12 ~ 15";
-            case INCREASE_STRENGTH -> "Sets: 3 - Reps 3 ~ 6";
-            case BUILD_MUSCLE -> "Sets: 3 - Reps 8 ~ 12";
-        };
+        String goalSets = getGoalSets(userInfo.getGoal());
 
         UserPlan userPlan = UserPlan.builder()
                 .daysPerWeek(templatePlan.getDaysPerWeek())
@@ -67,7 +64,7 @@ public class UserWorkoutPlanService {
                             .exercise(exerciseDTO.getExercise())
                             .exerciseOrder(exerciseDTO.getExerciseOrder())
                             .exerciseDone(false) // default to false
-                            .sets(goalSets)
+                            .setsInfo(goalSets)
                             .build();
 
                     userPlanWeekDayExerciseRep.save(userExercise);
@@ -89,8 +86,7 @@ public class UserWorkoutPlanService {
     }
 
     public UserPlanDTO getUserWorkoutPlanByUserId() {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+        Long userID = getCurrentUserId();
 
         UserPlan plan = userPlanRep.findByUserInfoId(userID)
                 .orElseThrow(() -> new RuntimeException("Workout plan not found for user ID: " + userID));
@@ -98,41 +94,58 @@ public class UserWorkoutPlanService {
         return UserWorkoutPlanMapper.toDTO(plan);
     }
 
-    public Response assignDoneToExercise(long exerciseID, long dayID, long weekID) {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+    public Response markExerciseAsDone(long exerciseID, long dayID, long weekID) {
+        Long userID = getCurrentUserId();
 
         Optional<UserPlanWeekDayExercise> optionalExercise = userPlanWeekDayExerciseRep
                 .findByPlanWeekDay_IdAndExercise_IdAndPlanWeekDay_PlanWeek_IdAndPlanWeekDay_PlanWeek_Plan_UserInfo_Id
                         (dayID, exerciseID, weekID, userID);
 
-        if (optionalExercise.isPresent()) {
-            UserPlanWeekDayExercise exercise = optionalExercise.get();
-            exercise.setExerciseDone(true);
-            userPlanWeekDayExerciseRep.save(exercise); // This may be optional if inside @Transactional
-            return new Response("success" ,"Exercise labeled done successfully!");
-
-        } else {
-            throw new EntityNotFoundException("Exercise not found for this user, day, and exercise ID");
-        }
+        optionalExercise.ifPresentOrElse(
+                exercise -> {
+                    if (!exercise.isExerciseDone()) {
+                        exercise.setExerciseDone(true);
+                        userPlanWeekDayExerciseRep.save(exercise);
+                    }
+                },
+                () -> {
+                    throw new EntityNotFoundException("Exercise not found for this user, day, and exercise ID");
+                }
+        );
+        return new Response("success", "Exercise labeled done successfully!");
     }
 
     public Response swapExerciseInPlan(Long weekId, Long dayId, Long oldExerciseId, Long newExerciseId) {
-        String jwtToken = jwtTokenUtils.getJwtToken();
-        Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
+        Long userId = getCurrentUserId();
 
-        UserPlanWeekDayExercise userExercise;
-        Optional<UserPlanWeekDayExercise> optionalUserExercise = userPlanWeekDayExerciseRep
+        // Step 1: Load the day (with exercises)
+        UserPlanWeekDay planDay = userPlanWeekDayRep.findById(dayId)
+                .orElseThrow(() -> new EntityNotFoundException("Plan day not found"));
+
+        // Step 2: Check if new exercise already exists in the day's exercises
+        boolean alreadyExists = planDay.getExercises().stream()
+                .anyMatch(e -> e.getExercise().getId().equals(newExerciseId));
+        if (alreadyExists) {
+            throw new IllegalArgumentException("The new exercise already exists in this day.");
+        }
+
+        // Step 3: Load the exercise entry to swap
+        UserPlanWeekDayExercise userExercise = userPlanWeekDayExerciseRep
                 .findByPlanWeekDay_IdAndExercise_IdAndPlanWeekDay_PlanWeek_IdAndPlanWeekDay_PlanWeek_Plan_UserInfo_Id(
-                        dayId, oldExerciseId, weekId, userID);
+                        dayId, oldExerciseId, weekId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Exercise not found in user's plan"));
 
-        if (optionalUserExercise.isPresent()) {
-            userExercise = optionalUserExercise.get();
-            Exercise newExercise = exerciseRepository.findById(newExerciseId)
-                    .orElseThrow(() -> new IllegalArgumentException("New exercise not found"));
-            userExercise.setExercise(newExercise);
-            userPlanWeekDayExerciseRep.save(userExercise);
-            return new Response("success" ,"Exercise swapped successfully!");
-        } else throw new IllegalArgumentException("Exercise not found in user's plan");
+        // Step 4: Load new exercise and swap
+        Exercise newExercise = exerciseRepository.findById(newExerciseId)
+                .orElseThrow(() -> new IllegalArgumentException("New exercise not found"));
+
+        userExercise.setExercise(newExercise);
+        userPlanWeekDayExerciseRep.save(userExercise);
+
+        return new Response("success", "Exercise swapped successfully!");
+    }
+
+    public Long getCurrentUserId() {
+        return jwtTokenUtils.getIdFromToken(jwtTokenUtils.getJwtToken());
     }
 }

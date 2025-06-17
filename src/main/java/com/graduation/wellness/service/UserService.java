@@ -5,8 +5,11 @@ import com.graduation.wellness.mapper.UserMapper;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.UserDto;
 import com.graduation.wellness.model.entity.User;
+import com.graduation.wellness.model.entity.UserInfo;
+import com.graduation.wellness.repository.UserInfoRepository;
 import com.graduation.wellness.repository.UserRepo;
 import com.graduation.wellness.security.JwtTokenUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
+    private final UserInfoRepository userInfoRepo;
     private final RoleService roleService;
     private final JwtTokenUtils jwtTokenUtils;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -106,7 +110,7 @@ public class UserService {
         String email = jwtTokenUtils.getEmailFromToken(jwtToken);
         User user = loadUserByEmail(email);
         if (!passwordEncoder.matches(curPassword, user.getPassword())) {
-            throw new BaseApiExcepetions(String.format("Wrong password has been invoken"), HttpStatus.BAD_REQUEST);
+            throw new BaseApiExcepetions(String.format("Wrong password has been invoked"), HttpStatus.BAD_REQUEST);
         }
         if(newPassword != null) {
             user.setPassword(passwordEncoder.encode(newPassword));
@@ -152,8 +156,14 @@ public class UserService {
     public Response deleteAccount() {
         String jwtToken = jwtTokenUtils.getJwtToken();
         String email = jwtTokenUtils.getEmailFromToken(jwtToken);
+
         User user = loadUserByEmail(email);
+        UserInfo userInfo = userInfoRepo.findByUser_Email(email)
+                .orElseThrow(() -> new EntityNotFoundException("UserInfo not found for email: " + email));
+
+        userInfoRepo.delete(userInfo);
         userRepo.delete(user);
+
         return new Response("success" ,"User Account has been deleted successfully!");
     }
 }

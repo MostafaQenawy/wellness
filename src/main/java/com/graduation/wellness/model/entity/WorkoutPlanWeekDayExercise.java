@@ -1,23 +1,26 @@
 package com.graduation.wellness.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "template_plan_week_day_exercises")
 public class WorkoutPlanWeekDayExercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "plan_week_day_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "plan_week_day_id", nullable = false)
     private WorkoutPlanWeekDay planWeekDay;
 
+    @Min(1)
     @ManyToOne
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;

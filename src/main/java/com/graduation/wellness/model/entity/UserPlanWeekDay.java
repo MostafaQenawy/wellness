@@ -3,34 +3,38 @@ package com.graduation.wellness.model.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user_plan_week_days")
 public class UserPlanWeekDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "plan_week_id", nullable = false)
-    @JsonBackReference // Prevent recursion into plan again
+    @JsonBackReference // Prevent recursion into plan again.
     private UserPlanWeek planWeek;
 
+    @Min(1)
+    @Max(7)
     @Column(name = "day_number")
     private int dayNumber;
 
-    @OneToMany(mappedBy = "planWeekDay", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("exerciseOrder ASC")
     @JsonManagedReference // Forward reference to exercises
-    private List<UserPlanWeekDayExercise> exercises;
+    @OneToMany(mappedBy = "planWeekDay", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPlanWeekDayExercise> exercises = new ArrayList<>();
 }

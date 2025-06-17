@@ -6,7 +6,6 @@ import com.graduation.wellness.model.dto.SwapApiBodyReq;
 import com.graduation.wellness.service.ExerciseService;
 import com.graduation.wellness.service.UserWorkoutPlanService;
 import com.graduation.wellness.model.dto.DoneApiBodyReq;
-import com.graduation.wellness.model.entity.Exercise;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +36,7 @@ public class ExerciseController {
 
     @GetMapping("/done")
     public Response exerciseDoneApi(@RequestBody DoneApiBodyReq doneApiBodyReq) {
-        return userWorkoutPlanService.assignDoneToExercise(
+        return userWorkoutPlanService.markExerciseAsDone(
                 doneApiBodyReq.exerciseID(),
                 doneApiBodyReq.dayID(),
                 doneApiBodyReq.weekID());

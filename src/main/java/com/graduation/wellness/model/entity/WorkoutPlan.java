@@ -3,25 +3,24 @@ package com.graduation.wellness.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import com.graduation.wellness.model.enums.Gender;
 import com.graduation.wellness.model.enums.Goal;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "template_plans")
 public class WorkoutPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
@@ -36,6 +35,7 @@ public class WorkoutPlan {
     @Column(name = "days_per_week")
     private int daysPerWeek;                        //only these values: 1 / 2 / 3 / 4 / 5 / 6
 
+    @OrderBy("weekNumber ASC")
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutPlanWeek> weeks;
+    private List<WorkoutPlanWeek> weeks = new ArrayList<>();
 }

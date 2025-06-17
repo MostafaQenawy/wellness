@@ -1,14 +1,11 @@
 package com.graduation.wellness.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.graduation.wellness.model.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import com.graduation.wellness.model.enums.ActivityLevel;
-import com.graduation.wellness.model.enums.ExperienceLevel;
-import com.graduation.wellness.model.enums.Gender;
-import com.graduation.wellness.model.enums.Goal;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -19,24 +16,26 @@ import static com.graduation.wellness.util.AgeClassifier.classifyAge;
 import static com.graduation.wellness.util.BMICalculator.BMICalculate;
 import static com.graduation.wellness.util.BMIClassifier.classifyBMI;
 
-@Data
-@Entity
+@Getter
+@Setter
 @Builder
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_info")
 public class UserInfo {
+
     @Id
-    private Long id;            // Same as user's ID
+    private Long id;
 
     @OneToOne
-    @MapsId                     // This makes UserInfo use the User's ID
-    @JoinColumn(name = "id")    // This will also be the PK and FK
+    @MapsId
+    @JoinColumn(name = "id")
     private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
-    private Gender gender;                          //only these values: Male / Female
+    private Gender gender;
 
     @Column(name = "age")
     private int age;
@@ -49,24 +48,24 @@ public class UserInfo {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "goal", nullable = false)
-    private Goal goal;                              //only these values: Weight Cut / Muscle Gain / Increase Strength
+    private Goal goal;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_level", nullable = false)
-    private ActivityLevel activityLevel;            //only these values: sedentary / lightly active / Moderately active / very active
+    private ActivityLevel activityLevel;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "experience_level", nullable = false)
-    private ExperienceLevel experienceLevel;        //only these values: Beginner / Intermediate / advanced
+    private ExperienceLevel experienceLevel;
 
     @Min(2)
     @Max(6)
-    @Column(name = "days_per_week")
-    private int daysPerWeek;                        //only these values: 1 / 2 / 3 / 4 / 5 / 6
+    @Column(name = "days_per_week", nullable = false)
+    private int daysPerWeek;
 
-    @JsonManagedReference // Indicates the forward part of the relationship
+    @JsonManagedReference
     @OneToOne(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserPlan UserWorkoutPlan;
+    private UserPlan userWorkoutPlan;
 
     @ManyToMany
     @JoinTable(
@@ -76,6 +75,10 @@ public class UserInfo {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Exercise> favouriteExercises = new ArrayList<>();
+
+    public boolean isMale() {
+        return this.gender == Gender.MALE;
+    }
 
     @Transient
     public double getBMI() {

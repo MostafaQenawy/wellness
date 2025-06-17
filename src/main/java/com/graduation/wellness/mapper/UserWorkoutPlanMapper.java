@@ -64,7 +64,7 @@ public class UserWorkoutPlanMapper {
                 entity.getExerciseOrder(),
                 entity.isExerciseDone(),
                 ex.getEquipmentType(),
-                entity.getSets(),
+                entity.getSetsInfo(),
                 exerciseImageUrl,
                 exerciseVideoUrl
         );

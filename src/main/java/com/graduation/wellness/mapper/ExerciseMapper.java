@@ -5,8 +5,16 @@ import com.graduation.wellness.model.entity.Exercise;
 
 public class ExerciseMapper {
 
-    public static ExerciseDTO toExerciseDTO(Exercise exercise, String imageUrl, String videoUrl, String sets) {
+    public static ExerciseDTO toExerciseDTO(Exercise ex, boolean isMale, String goalSets) {
+        return mapToDTO(
+                ex,
+                isMale ? ex.getMaleImageUrl() : ex.getFemaleImageUrl(),
+                isMale ? ex.getMaleVideoUrl() : ex.getFemaleVideoUrl(),
+                goalSets
+        );
+    }
 
+    private static ExerciseDTO mapToDTO(Exercise exercise, String imageUrl, String videoUrl, String sets) {
         return new ExerciseDTO(
                 exercise.getId(),
                 exercise.getName(),

@@ -1,0 +1,89 @@
+spring:
+  application:
+    name: wellness
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            client-id: 1037939251573451
+            client-secret: f8adee7dd7d00e18b8d28091b49391f2
+            scope: email,public_profile
+            redirect-uri: http://localhost:8080/login/oauth2/code/facebook
+          google:
+            client-id: 815763135583-f1udmtgqbrd86f64kmval97nu57icoss.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            scope: profile, email
+        provider:
+          google:
+            token-uri: https://oauth2.googleapis.com/token
+          facebook:
+            authorization-uri: https://www.facebook.com/v17.0/dialog/oauth
+            token-uri: https://graph.facebook.com/v17.0/oauth/access_token
+            user-info-uri: https://graph.facebook.com/me?fields=id,email,first_name,last_name
+            user-name-attribute: id
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: wellness.hub.app@gmail.com
+    password: gkametnwebkusfcq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    url: jdbc:postgresql://aws-0-eu-central-1.pooler.supabase.com:5432/postgres?user=postgres.bmklbklalabdjdghydvf&password=wellnesshub12
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 50000          # Maximum time (in milliseconds) to wait for a connection from the pool (50 seconds)
+      idle-timeout: 300000               # Time (in milliseconds) before an idle connection is removed from the pool (5 minutes)
+      max-lifetime: 900000               # Maximum lifetime of a connection (in milliseconds) before it's closed (15 minutes)
+      maximum-pool-size: 20               # Maximum number of connections allowed in the pool (8 connections)
+      minimum-idle: 5                    # Minimum number of idle connections that should always be maintained (8 connections)
+      pool-name: Mypool
+      auto-commit: false
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect   # Defines the SQL dialect for MySQL 8
+        format_sql: true                               # Pretty prints SQL queries in logs
+    hibernate:
+      ddl-auto: update                                 # Automatically updates the database schema (see notes below)
+
+logging:
+  level:
+    org:
+      hibernate: warn       # Only show warnings/errors for Hibernate
+      hibernate.SQL: warn   # Hide SQL logs (better performance)
+      springframework:
+        web: DEBUG       # Only important web logs
+        security: DEBUG       # Only important security logs
+
+auth:
+  secret: global-sec-key
+  access:
+    expiration: 36000000
+
+
+api:
+  login: /login
+  role: /role
+  user: /user
+
+server:
+  servlet:
+    session:
+      persistent: true
+      timeout: 1d

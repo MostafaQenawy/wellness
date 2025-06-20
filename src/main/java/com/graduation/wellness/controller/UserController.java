@@ -51,8 +51,8 @@ public class UserController {
         return userService.deleteAccount();
     }
 
-    @DeleteMapping("/updateAccount")
-    public Response updateAccount(User user) {
+    @PostMapping("/updateAccount")
+    public Response updateAccount(@RequestBody User user) {
         return userService.updateAccount(user);
     }
 }

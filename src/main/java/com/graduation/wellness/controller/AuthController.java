@@ -70,6 +70,8 @@ public class AuthController {
         return userService.save(user);
     }
 
+
+
     @PostMapping("/saveUserInfo")
     public Response saveUserInfoApi (@Valid @RequestBody UserInfo userInfo, @RequestParam String userEmail){
         return userRegistrationService.registerUserAndAssignPlan(userInfo, userEmail);

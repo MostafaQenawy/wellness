@@ -7,8 +7,13 @@ import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -19,6 +24,7 @@ public class UserController {
     private final UserInfoService userInfoService;
     private EmailService emailService;
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/getUserInfo")
     public UserInfoDTO getUserInfoApi(){
         return userInfoService.getUserInfo();
@@ -51,8 +57,18 @@ public class UserController {
         return userService.deleteAccount();
     }
 
-    @DeleteMapping("/updateAccount")
-    public Response updateAccount(User user) {
-        return userService.updateAccount(user);
+    @PostMapping("/updateAccount")
+    public Response updateAccount(@RequestBody UserInfoDTO userInfoDTO) {
+        return userService.updateAccount(userInfoDTO);
+    }
+
+    @GetMapping("/getProfilePicture")
+    public ResponseEntity<byte[]> getProfilePicture() {
+        return userService.getProfilePicture();
+    }
+
+    @PostMapping("/updateFilePicture")
+    public Response updateProfilePicture(@RequestParam("file")  MultipartFile file) throws IOException {
+        return userService.updateProfilePicture(file);
     }
 }

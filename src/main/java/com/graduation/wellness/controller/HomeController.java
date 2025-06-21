@@ -18,7 +18,7 @@ public class HomeController {
         this.exerciseService = exerciseService;
     }
 
-    @GetMapping("muscleExercises")
+    @GetMapping("/muscleExercises")
     public List<ExerciseDTO> getMuscleExercisesApi(@RequestParam String regionMuscle){
         return exerciseService.getMuscleExercises(regionMuscle);
     }

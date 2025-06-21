@@ -1,5 +1,6 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.exception.BaseApiExcepetions;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.model.entity.UserInfo;
@@ -43,13 +44,18 @@ public class AuthController {
        boolean exists=userService.isExist(fbUser.getEmail());
         if (!exists) {
             userService.save(fbUser); // Register new user
+            return ResponseEntity.ok(new JWTResponseDto());
+        }else {
+            User user = userService.loadUserByEmail(fbUser.getEmail());
+            if (!user.getProvider().equals("FACEBOOK")) {
+                throw new BaseApiExcepetions(String.format("This Email is not regestered via Facebook ", user.getEmail()), HttpStatus.NOT_FOUND);
+            }
+            String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId(), fbUser.getUsername());
+            return ResponseEntity.ok(new JWTResponseDto(jwt));
         }
-
-        String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId() , fbUser.getUsername());
-        return ResponseEntity.ok(new JWTResponseDto(jwt));
     }
 
-    @PostMapping("google/login")
+    @PostMapping("/google/login")
     public ResponseEntity<?> loginWithGoogle(@RequestBody JWTResponseDto request) {
         User googleUser = userService.getGoogleUser(request.getAccessToken());
 
@@ -60,9 +66,17 @@ public class AuthController {
         boolean exists=userService.isExist(googleUser.getEmail());
         if (!exists) {
             userService.save(googleUser); // Register new user
+            return ResponseEntity.ok(new JWTResponseDto());
         }
-        String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId() , googleUser.getUsername());
-        return ResponseEntity.ok(new JWTResponseDto(jwt));
+        else {
+            User user = userService.loadUserByEmail(googleUser.getEmail());
+            if (!user.getProvider().equals("GOOGLE")) {
+                throw new BaseApiExcepetions(String.format("This Email is not regestered via Google ", user.getEmail()), HttpStatus.NOT_FOUND);
+            }
+            String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId(), googleUser.getUsername());
+            return ResponseEntity.ok(new JWTResponseDto(jwt));
+
+        }
     }
 
     @PostMapping("/register")

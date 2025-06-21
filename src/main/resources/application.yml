@@ -74,7 +74,7 @@ logging:
 auth:
   secret: global-sec-key
   access:
-    expiration: 36000000
+    expiration: 2592000000
 
 
 api:

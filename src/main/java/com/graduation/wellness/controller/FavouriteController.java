@@ -13,7 +13,7 @@ import java.util.List;
 public class FavouriteController {
     private final ExerciseService exerciseService;
 
-    @GetMapping("getFavouriteExercises")
+    @GetMapping("/getFavouriteExercises")
     public List<ExerciseDTO> getFavouriteExercises(){
         return exerciseService.getFavouriteExercises();
     }

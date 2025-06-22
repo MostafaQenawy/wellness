@@ -4,6 +4,7 @@ import com.graduation.wellness.exception.BaseApiExcepetions;
 import com.graduation.wellness.mapper.UserMapper;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.UserDto;
+import com.graduation.wellness.model.dto.UserInfoDTO;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.model.entity.UserInfo;
 import com.graduation.wellness.repository.UserInfoRepository;
@@ -185,12 +186,18 @@ public class UserService {
     }
 
 
-    public Response updateAccount(User user) {
-        User updatedUser = loadUserByEmail(user.getEmail());
-        updatedUser.setFirstName(user.getFirstName());
-        updatedUser.setLastName(user.getLastName());
+    public Response updateAccount(UserInfoDTO userInfoDTO) {
+        User user = loadUserByEmail(userInfoDTO.email());
+        user.setFirstName(userInfoDTO.firstName());
+        user.setLastName(userInfoDTO.lastName());
 
-        userRepo.save(updatedUser);
+        UserInfo userInfo = userInfoRepo.findUserInfoById(user.getId());
+        userInfo.setHeight(userInfoDTO.height());
+        userInfo.setAge(userInfoDTO.age());
+        userInfo.setWeight(userInfoDTO.weight());
+
+        userRepo.save(user);
+        userInfoRepo.save(userInfo);
         return new Response("success" ,"User profile has been updated successfully!");
     }
 

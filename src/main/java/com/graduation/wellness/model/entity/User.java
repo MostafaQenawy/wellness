@@ -37,7 +37,7 @@ public class User implements UserDetails {
     @Column( unique = true )
     private String providerUserId;  // Unique ID provided by the provider (e.g., Google ID)
 
-    private String profilePicturePath;  // ✅ Store file path instead of URL
+    private byte[] profilePicture;  // ✅ Store file path instead of URL
 
     @Size(min = 8 , message = "password minLength is 8")
     @Column(nullable = true)

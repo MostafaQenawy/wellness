@@ -12,12 +12,17 @@ import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 
@@ -143,6 +148,42 @@ public class UserService {
     private static List<GrantedAuthority> getAuthorities(User user) {
         return (List<GrantedAuthority>) user.getAuthorities();
     }
+
+    public Response updateProfilePicture(MultipartFile file) throws IOException {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
+        User user = loadUserByEmail(email);
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Only image files are allowed.");
+        }
+
+        // ✅ Optionally: check file extension (extra safety)
+        String filename = file.getOriginalFilename();
+        if (filename != null && !filename.matches("(?i).+\\.(jpg|jpeg|png|webp|gif)$")) {
+            throw new IllegalArgumentException("Only JPG, JPEG, PNG, WEBP, or GIF files are accepted.");
+        }
+
+        user.setProfilePicture(file.getBytes()); // Assuming byte[] field
+        userRepo.save(user);
+
+        return new Response("success", "Profile picture has been uploaded successfully!");
+    }
+
+
+    public ResponseEntity<byte[]> getProfilePicture() {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
+        User user = loadUserByEmail(email);
+
+        byte[] imageData = user.getProfilePicture();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG); // or IMAGE_PNG based on what you upload
+        return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+    }
+
 
     public Response updateAccount(User user) {
         User updatedUser = loadUserByEmail(user.getEmail());

@@ -180,8 +180,13 @@ public class UserService {
 
         byte[] imageData = user.getProfilePicture();
 
+        // ✅ Avoid sending empty image
+        if (imageData == null || imageData.length == 0) {
+            return ResponseEntity.noContent().build(); // HTTP 204: No Content
+        }
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG); // or IMAGE_PNG based on what you upload
+        headers.setContentType(MediaType.IMAGE_JPEG); // Update if needed
         return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
     }
 

@@ -23,12 +23,7 @@ public class UserController {
     public UserInfoDTO getUserInfoApi(){
         return userInfoService.getUserInfo();
     }
-
-    @GetMapping("/getEmail")
-    public UserInfoDTO getUserInfoApi(){
-        return userInfoService.getUserInfo();
-    }
-
+    
     @PostMapping("/active")
     public Map<String ,String> sendOTPMail(@RequestParam String userName, @RequestParam String email)
             throws MessagingException {

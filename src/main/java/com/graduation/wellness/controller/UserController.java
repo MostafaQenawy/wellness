@@ -65,10 +65,9 @@ public class UserController {
     }
 
 
-    @PostMapping("/updateAccount")
-    public Response updateAccount(@RequestBody User user) {
-        return userService.updateAccount(user);
+    @PostMapping("/updateProfile")
+    public Response updateAccount(@RequestBody UserInfoDTO userInfoDTO) {
+        return userService.updateAccount(userInfoDTO);
     }
-
 
 }

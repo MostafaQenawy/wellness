@@ -1,6 +1,6 @@
 package com.graduation.wellness.controller;
 
-import com.graduation.wellness.exception.BaseApiExcepetions;
+import com.graduation.wellness.exception.BaseApiExceptions;
 import com.graduation.wellness.model.dto.AOuthResponse;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
@@ -49,7 +49,10 @@ public class AuthController {
         }else {
             User user = userService.loadUserByEmail(fbUser.getEmail());
             if (!user.getProvider().equals("FACEBOOK")) {
-                throw new BaseApiExcepetions(String.format("This Email is regestered via Google ", user.getEmail()), HttpStatus.NOT_FOUND);
+                throw new BaseApiExceptions(
+                        String.format("This Email is registered via Google", user.getEmail()),
+                        HttpStatus.NOT_FOUND
+                );
             }
             String jwt = jwtTokenUtils.generateToken(user.getEmail(), user.getId(), user.getUsername());
             return ResponseEntity.ok(new AOuthResponse(fbUser.getEmail() , jwt));
@@ -72,7 +75,10 @@ public class AuthController {
         else {
             User user = userService.loadUserByEmail(googleUser.getEmail());
             if (!user.getProvider().equals("GOOGLE")) {
-                throw new BaseApiExcepetions(String.format("This Email is regestered via Facebook ", user.getEmail()), HttpStatus.NOT_FOUND);
+                throw new BaseApiExceptions(
+                        String.format("This Email is registered via Facebook", user.getEmail()),
+                        HttpStatus.NOT_FOUND
+                );
             }
             String jwt = jwtTokenUtils.generateToken(user.getEmail(), user.getId(), user.getUsername());
             return ResponseEntity.ok(new AOuthResponse(googleUser.getEmail(), jwt));

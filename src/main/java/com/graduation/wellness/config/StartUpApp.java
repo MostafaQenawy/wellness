@@ -27,7 +27,6 @@ public class StartUpApp implements CommandLineRunner {
                     "Mostafa",    // firstName
                     "Qenawy",              // lastName
                     "Mostafa@example.com", // email
-                    "Developer@gmail.com", // syncAccount
                     "GOOGLE",              // provider
                     "123456789"            // providerUserId (Google ID, for example)
             ));

@@ -67,7 +67,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             // Register new user without password
             user = new User();
             user.setEmail(email);
-            user.setSyncAccount(email);
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setProvider(provider);

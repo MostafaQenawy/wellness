@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "profilePicture")
 public class User implements UserDetails {
 
     @Id
@@ -30,19 +31,14 @@ public class User implements UserDetails {
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "Invalid email format")
     private String email;
 
-    @Column( unique = true )
-    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "Invalid email format")
-    private String syncAccount;
-
     // Fields for OAuth2
     @Column(nullable = false)
     private String provider; // e.g., "google", "facebook"
 
-
     @Column( unique = true )
     private String providerUserId;  // Unique ID provided by the provider (e.g., Google ID)
 
-    private String profilePicturePath;  // ✅ Store file path instead of URL
+    private byte[] profilePicture;  // ✅ Store file path instead of URL
 
     @Size(min = 8 , message = "password minLength is 8")
     @Column(nullable = true)
@@ -63,17 +59,6 @@ public class User implements UserDetails {
         this.email = email;
         this.password= password;
         this.provider = provider;
-    }
-
-    public User(String firstName, String lastName, String email,
-                String syncAccount, String provider, String providerUserId) {
-        super();
-        this.firstName = firstName;
-        this.lastName  = lastName;
-        this.email = email;
-        this.syncAccount = syncAccount;
-        this.provider = provider;
-        this.providerUserId = providerUserId;
     }
 
     @Override

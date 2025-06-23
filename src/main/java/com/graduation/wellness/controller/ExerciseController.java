@@ -34,7 +34,7 @@ public class ExerciseController {
                 swapApiBodyReq.newExerciseID());
     }
 
-    @GetMapping("/done")
+    @PostMapping("/done")
     public Response exerciseDoneApi(@RequestBody DoneApiBodyReq doneApiBodyReq) {
         return userWorkoutPlanService.markExerciseAsDone(
                 doneApiBodyReq.exerciseID(),

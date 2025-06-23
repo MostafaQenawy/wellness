@@ -1,5 +1,7 @@
 package com.graduation.wellness.controller;
 
+import com.graduation.wellness.exception.BaseApiExcepetions;
+import com.graduation.wellness.model.dto.AOuthResponse;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.model.entity.UserInfo;
@@ -33,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/facebook/login")
-    public ResponseEntity<JWTResponseDto> loginWithFacebook(@RequestBody JWTResponseDto request) {
+    public ResponseEntity<AOuthResponse> loginWithFacebook(@RequestBody JWTResponseDto request) {
         User fbUser = userService.getUserFromFacebook(request.getAccessToken());
 
         if (fbUser == null || fbUser.getEmail() == null) {
@@ -43,13 +45,18 @@ public class AuthController {
        boolean exists=userService.isExist(fbUser.getEmail());
         if (!exists) {
             userService.save(fbUser); // Register new user
+            return ResponseEntity.ok(new AOuthResponse(fbUser.getEmail()));
+        }else {
+            User user = userService.loadUserByEmail(fbUser.getEmail());
+            if (!user.getProvider().equals("FACEBOOK")) {
+                throw new BaseApiExcepetions(String.format("This Email is regestered via Google ", user.getEmail()), HttpStatus.NOT_FOUND);
+            }
+            String jwt = jwtTokenUtils.generateToken(user.getEmail(), user.getId(), user.getUsername());
+            return ResponseEntity.ok(new AOuthResponse(fbUser.getEmail() , jwt));
         }
-
-        String jwt = jwtTokenUtils.generateToken(fbUser.getEmail(), fbUser.getId() , fbUser.getUsername());
-        return ResponseEntity.ok(new JWTResponseDto(jwt));
     }
 
-    @PostMapping("google/login")
+    @PostMapping("/google/login")
     public ResponseEntity<?> loginWithGoogle(@RequestBody JWTResponseDto request) {
         User googleUser = userService.getGoogleUser(request.getAccessToken());
 
@@ -60,9 +67,17 @@ public class AuthController {
         boolean exists=userService.isExist(googleUser.getEmail());
         if (!exists) {
             userService.save(googleUser); // Register new user
+            return ResponseEntity.ok(new AOuthResponse(googleUser.getEmail()));
         }
-        String jwt = jwtTokenUtils.generateToken(googleUser.getEmail(), googleUser.getId() , googleUser.getUsername());
-        return ResponseEntity.ok(new JWTResponseDto(jwt));
+        else {
+            User user = userService.loadUserByEmail(googleUser.getEmail());
+            if (!user.getProvider().equals("GOOGLE")) {
+                throw new BaseApiExcepetions(String.format("This Email is regestered via Facebook ", user.getEmail()), HttpStatus.NOT_FOUND);
+            }
+            String jwt = jwtTokenUtils.generateToken(user.getEmail(), user.getId(), user.getUsername());
+            return ResponseEntity.ok(new AOuthResponse(googleUser.getEmail(), jwt));
+
+        }
     }
 
     @PostMapping("/register")

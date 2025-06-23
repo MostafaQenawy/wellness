@@ -1,6 +1,6 @@
 package com.graduation.wellness.service;
 
-import com.graduation.wellness.exception.BaseApiExcepetions;
+import com.graduation.wellness.exception.BaseApiExceptions;
 import com.graduation.wellness.mapper.UserMapper;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.UserDto;
@@ -110,7 +110,7 @@ public class UserService {
         String email = jwtTokenUtils.getEmailFromToken(jwtToken);
         User user = loadUserByEmail(email);
         if (!passwordEncoder.matches(curPassword, user.getPassword())) {
-            throw new BaseApiExcepetions(String.format("Wrong password has been invoked"), HttpStatus.BAD_REQUEST);
+            throw new BaseApiExceptions(String.format("Wrong password has been invoked"), HttpStatus.BAD_REQUEST);
         }
         if(newPassword != null) {
             user.setPassword(passwordEncoder.encode(newPassword));
@@ -120,7 +120,7 @@ public class UserService {
     }
 
     public UserDto findById(Long id){
-        User user = userRepo.findById(id).orElseThrow(() -> new BaseApiExcepetions(String.format("No Record with user_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
+        User user = userRepo.findById(id).orElseThrow(() -> new BaseApiExceptions(String.format("No Record with user_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
         UserDto userDto = userMapper.Map(user);
         return userDto;
     }
@@ -132,7 +132,7 @@ public class UserService {
     public User loadUserByEmail(String email) {
         User user = userRepo.findByEmail(email);
         if(user == null)
-            throw new BaseApiExcepetions(String.format("This Email not registered yet " , email), HttpStatus.NOT_FOUND);
+            throw new BaseApiExceptions(String.format("This Email not registered yet " , email), HttpStatus.NOT_FOUND);
         return user;
     }
 

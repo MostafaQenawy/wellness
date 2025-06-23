@@ -1,6 +1,6 @@
 package com.graduation.wellness.service;
 
-import com.graduation.wellness.exception.BaseApiExcepetions;
+import com.graduation.wellness.exception.BaseApiExceptions;
 import com.graduation.wellness.mapper.RoleMapper;
 import com.graduation.wellness.model.dto.RoleDto;
 import com.graduation.wellness.model.entity.Role;
@@ -24,7 +24,7 @@ public class RoleService {
     }
 
     public RoleDto findById(Long id){
-        Role role = roleRepo.findById(id).orElseThrow(()-> new BaseApiExcepetions(String.format("No Record with role_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
+        Role role = roleRepo.findById(id).orElseThrow(()-> new BaseApiExceptions(String.format("No Record with role_id [%d] found in data base " , id) , HttpStatus.NOT_FOUND));
         RoleDto roleDto= roleMapper.Map(role);
 
         return roleDto;
@@ -33,7 +33,7 @@ public class RoleService {
     public Role findByName(String name){
         Role role = roleRepo.findByName(name);
         if(role == null)
-            throw new BaseApiExcepetions(String.format("No Record with role_name [%s] found in data base " , name),HttpStatus.NOT_FOUND);
+            throw new BaseApiExceptions(String.format("No Record with role_name [%s] found in data base " , name),HttpStatus.NOT_FOUND);
         return role;
     }
 

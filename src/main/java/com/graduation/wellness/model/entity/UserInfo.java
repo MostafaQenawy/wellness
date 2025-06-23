@@ -65,7 +65,7 @@ public class UserInfo {
 
     @JsonManagedReference
     @OneToOne(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserPlan userWorkoutPlan;
+    private UserPlan userPlan;
 
     @ManyToMany
     @JoinTable(

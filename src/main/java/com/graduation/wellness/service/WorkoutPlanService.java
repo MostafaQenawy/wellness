@@ -28,7 +28,7 @@ public class WorkoutPlanService {
                 .orElseThrow(() -> new NoSuchElementException("No workout plan match this user"));
     }
 
-    private Optional<WorkoutPlan> findBestTemplate(UserInfo userInfo) {
+/*    private Optional<WorkoutPlan> findBestTemplate(UserInfo userInfo) {
         return switch (userInfo.getGoal()) {
             case WEIGHT_CUT, BUILD_MUSCLE -> workoutPlanRepository.findByAllAttributesIgnoreCase(
                     userInfo.getGender().name(),
@@ -39,5 +39,18 @@ public class WorkoutPlanService {
                     "INCREASE_STRENGTH",
                     userInfo.getDaysPerWeek());
         };
+    }*/
+
+    private Optional<WorkoutPlan> findBestTemplate(UserInfo userInfo) {
+        String dbGoal = switch (userInfo.getGoal()) {
+            case WEIGHT_CUT, BUILD_MUSCLE -> "WEIGHT_CUT";
+            case INCREASE_STRENGTH -> "INCREASE_STRENGTH";
+        };
+
+        return workoutPlanRepository.findByAllAttributesIgnoreCase(
+                userInfo.getGender().name(),
+                dbGoal,
+                userInfo.getDaysPerWeek()
+        );
     }
 }

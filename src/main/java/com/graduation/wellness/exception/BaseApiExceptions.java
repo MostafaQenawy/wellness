@@ -2,10 +2,10 @@ package com.graduation.wellness.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class BaseApiExcepetions extends RuntimeException {
+public class BaseApiExceptions extends RuntimeException {
     private HttpStatus httpStatus;
 
-    public BaseApiExcepetions(String message , HttpStatus httpStatus) {
+    public BaseApiExceptions(String message , HttpStatus httpStatus) {
         super(message);
         this.httpStatus = httpStatus ;
     }

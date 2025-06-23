@@ -20,8 +20,10 @@ public class UserInfoService {
 
     public void saveUserData(UserInfo userInfo, String userEmail) {
         User user = userService.loadUserByEmail(userEmail);
-        userInfo.setUser(user);                             // Important: this sets the id via @MapsId
+        userInfo.setUser(user);
+        userInfo.setId(user.getId()); // ensures it's treated as update
         userInfoRepository.save(userInfo);
+
     }
 
     public UserInfoDTO getUserInfo() {

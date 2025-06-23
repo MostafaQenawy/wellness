@@ -18,8 +18,8 @@ import java.sql.SQLException;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(BaseApiExcepetions.class )
-    public ResponseEntity<ErrorDetails> handleApiExceptions(BaseApiExcepetions ex, WebRequest request) {
+    @ExceptionHandler(BaseApiExceptions.class )
+    public ResponseEntity<ErrorDetails> handleApiExceptions(BaseApiExceptions ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false).substring(4), ex.getStatusCode());
         return new ResponseEntity<>(errorDetails, ex.getStatusCode());
     }

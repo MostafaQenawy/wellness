@@ -1,6 +1,6 @@
 package com.graduation.wellness.service;
 
-import com.graduation.wellness.exception.BaseApiExcepetions;
+import com.graduation.wellness.exception.BaseApiExceptions;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.security.JWTResponseDto;
 import com.graduation.wellness.security.JwtRequestDto;
@@ -28,7 +28,7 @@ public class AuthService {
 		User user = userService.loadUserByEmail(jwtRequestDto.getEmail());
 
 		if (!passwordEncoder.matches(jwtRequestDto.getPassword(), user.getPassword())) {
-			throw new BaseApiExcepetions(String.format("Wrong password has been invoken"), HttpStatus.BAD_REQUEST);
+			throw new BaseApiExceptions(String.format("Wrong password has been invoken"), HttpStatus.BAD_REQUEST);
 		}
 		String jwtToken = jwtTokenUtils.generateToken(user.getEmail() , user.getId() , user.getUsername());
 

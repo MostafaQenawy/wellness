@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "profilePicture")
 public class User implements UserDetails {
 
     @Id

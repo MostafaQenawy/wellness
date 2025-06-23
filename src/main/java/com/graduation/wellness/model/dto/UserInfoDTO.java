@@ -11,6 +11,7 @@ public record UserInfoDTO(
         String firstName,
         String lastName,
         String email,
+        String provider,
         Gender gender,
         int age,
         int weight,

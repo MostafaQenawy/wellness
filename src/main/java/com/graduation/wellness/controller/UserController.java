@@ -1,13 +1,11 @@
 package com.graduation.wellness.controller;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.UserInfoDTO;
-import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.service.EmailService;
 import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

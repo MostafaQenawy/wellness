@@ -9,6 +9,7 @@ import com.graduation.wellness.security.JWTResponseDto;
 import com.graduation.wellness.security.JwtRequestDto;
 import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.service.AuthService;
+import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserRegistrationService;
 import com.graduation.wellness.service.UserService;
 import jakarta.validation.Valid;
@@ -23,9 +24,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AuthController {
 
-    private UserService userService;
-    private AuthService authService;
-    private JwtTokenUtils jwtTokenUtils;
+    private final UserService userService;
+    private final AuthService authService;
+    private final JwtTokenUtils jwtTokenUtils;
+    private final UserInfoService userInfoService;
     private final UserRegistrationService userRegistrationService;
 
 
@@ -54,6 +56,12 @@ public class AuthController {
                         HttpStatus.NOT_FOUND
                 );
             }
+
+            UserInfo userInfo = userInfoService.loadUserInfoById(user.getId());
+            if(userInfo == null) {
+                return ResponseEntity.ok(new AOuthResponse(user.getEmail()));
+            }
+
             String jwt = jwtTokenUtils.generateToken(user.getEmail(), user.getId(), user.getUsername());
             return ResponseEntity.ok(new AOuthResponse(fbUser.getEmail() , jwt));
         }
@@ -74,12 +82,19 @@ public class AuthController {
         }
         else {
             User user = userService.loadUserByEmail(googleUser.getEmail());
+
             if (!user.getProvider().equals("GOOGLE")) {
                 throw new BaseApiExceptions(
                         String.format("This Email is registered via Facebook", user.getEmail()),
                         HttpStatus.NOT_FOUND
                 );
             }
+
+            UserInfo userInfo = userInfoService.loadUserInfoById(user.getId());
+            if(userInfo == null) {
+                return ResponseEntity.ok(new AOuthResponse(user.getEmail()));
+            }
+
             String jwt = jwtTokenUtils.generateToken(user.getEmail(), user.getId(), user.getUsername());
             return ResponseEntity.ok(new AOuthResponse(googleUser.getEmail(), jwt));
 

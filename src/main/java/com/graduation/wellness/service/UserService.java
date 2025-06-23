@@ -4,6 +4,7 @@ import com.graduation.wellness.exception.BaseApiExceptions;
 import com.graduation.wellness.mapper.UserMapper;
 import com.graduation.wellness.model.dto.Response;
 import com.graduation.wellness.model.dto.UserDto;
+import com.graduation.wellness.model.dto.UserInfoDTO;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.model.entity.UserInfo;
 import com.graduation.wellness.repository.UserInfoRepository;
@@ -12,12 +13,17 @@ import com.graduation.wellness.security.JwtTokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 
@@ -144,12 +150,59 @@ public class UserService {
         return (List<GrantedAuthority>) user.getAuthorities();
     }
 
-    public Response updateAccount(User user) {
-        User updatedUser = loadUserByEmail(user.getEmail());
-        updatedUser.setFirstName(user.getFirstName());
-        updatedUser.setLastName(user.getLastName());
+    public Response updateProfilePicture(MultipartFile file) throws IOException {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
+        User user = loadUserByEmail(email);
 
-        userRepo.save(updatedUser);
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Only image files are allowed.");
+        }
+
+        // ✅ Optionally: check file extension (extra safety)
+        String filename = file.getOriginalFilename();
+        if (filename != null && !filename.matches("(?i).+\\.(jpg|jpeg|png|webp|gif)$")) {
+            throw new IllegalArgumentException("Only JPG, JPEG, PNG, WEBP, or GIF files are accepted.");
+        }
+
+        user.setProfilePicture(file.getBytes()); // Assuming byte[] field
+        userRepo.save(user);
+
+        return new Response("success", "Profile picture has been uploaded successfully!");
+    }
+
+
+    public ResponseEntity<byte[]> getProfilePicture() {
+        String jwtToken = jwtTokenUtils.getJwtToken();
+        String email = jwtTokenUtils.getEmailFromToken(jwtToken);
+        User user = loadUserByEmail(email);
+
+        byte[] imageData = user.getProfilePicture();
+
+        // ✅ Avoid sending empty image
+        if (imageData == null || imageData.length == 0) {
+            return ResponseEntity.noContent().build(); // HTTP 204: No Content
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG); // Update if needed
+        return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+    }
+
+
+    public Response updateAccount(UserInfoDTO userInfoDTO) {
+        User user = loadUserByEmail(userInfoDTO.email());
+        user.setFirstName(userInfoDTO.firstName());
+        user.setLastName(userInfoDTO.lastName());
+
+        UserInfo userInfo = userInfoRepo.findUserInfoById(user.getId());
+        userInfo.setHeight(userInfoDTO.height());
+        userInfo.setAge(userInfoDTO.age());
+        userInfo.setWeight(userInfoDTO.weight());
+
+        userRepo.save(user);
+        userInfoRepo.save(userInfo);
         return new Response("success" ,"User profile has been updated successfully!");
     }
 

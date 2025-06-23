@@ -30,10 +30,14 @@ public class UserInfoService {
         String jwtToken = jwtTokenUtils.getJwtToken();
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
-         UserInfo userInfo = userInfoRepository.findById(userID)
-                 .orElseThrow(() -> new RuntimeException("User not found"));
-         User user = userRepository.findById(userID)
-                 .orElseThrow(() -> new RuntimeException("User not found"));
-         return UserInfoMapper.toDTO(user, userInfo);
+        User user = userRepository.findUserById(userID);
+        if( user == null)
+            new RuntimeException("User not found");
+
+        UserInfo userInfo = userInfoRepository.findUserInfoById(userID);
+        if(userInfo == null)
+            new RuntimeException("UserInfo not found");
+
+        return UserInfoMapper.toDTO(user, userInfo);
     }
 }

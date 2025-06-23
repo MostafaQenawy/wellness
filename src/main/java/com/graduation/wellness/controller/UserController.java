@@ -7,8 +7,12 @@ import com.graduation.wellness.service.UserInfoService;
 import com.graduation.wellness.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -50,9 +54,20 @@ public class UserController {
     public Response deleteAccount() {
         return userService.deleteAccount();
     }
-
-    @PostMapping("/updateAccount")
-    public Response updateAccount(@RequestBody User user) {
-        return userService.updateAccount(user);
+    @PostMapping("/updateProfilePicture")
+    public Response updateProfilePicture(@RequestParam("file") MultipartFile file) throws IOException {
+        return userService.updateProfilePicture(file);
     }
+
+    @GetMapping("/getProfilePicture")
+    public ResponseEntity<byte[]> getProfilePicture() {
+        return userService.getProfilePicture();
+    }
+
+
+    @PostMapping("/updateProfile")
+    public Response updateAccount(@RequestBody UserInfoDTO userInfoDTO) {
+        return userService.updateAccount(userInfoDTO);
+    }
+
 }

@@ -10,6 +10,7 @@ public class UserInfoMapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
+                .provider(user.getProvider())
                 .gender(userInfo.getGender())
                 .age(userInfo.getAge())
                 .weight(userInfo.getWeight())

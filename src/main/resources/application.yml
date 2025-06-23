@@ -74,13 +74,8 @@ logging:
 auth:
   secret: global-sec-key
   access:
-    expiration: 36000000
+    expiration: 2592000000
 
-
-api:
-  login: /login
-  role: /role
-  user: /user
 
 server:
   servlet:

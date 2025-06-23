@@ -1,5 +1,6 @@
 package com.graduation.wellness.service;
 
+import com.graduation.wellness.exception.BaseApiExceptions;
 import com.graduation.wellness.model.entity.User;
 import com.graduation.wellness.model.entity.UserInfo;
 import com.graduation.wellness.repository.UserInfoRepository;
@@ -7,6 +8,7 @@ import com.graduation.wellness.repository.UserRepo;
 import com.graduation.wellness.security.JwtTokenUtils;
 import com.graduation.wellness.mapper.UserInfoMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.graduation.wellness.model.dto.UserInfoDTO;
 
@@ -39,5 +41,9 @@ public class UserInfoService {
             new RuntimeException("UserInfo not found");
 
         return UserInfoMapper.toDTO(user, userInfo);
+    }
+
+    public UserInfo loadUserInfoById(Long id) {
+        return userInfoRepository.findById(id).orElse(null);
     }
 }

@@ -41,6 +41,10 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
   datasource:
     url: jdbc:postgresql://aws-0-eu-central-1.pooler.supabase.com:5432/postgres?user=postgres.bmklbklalabdjdghydvf&password=wellnesshub12

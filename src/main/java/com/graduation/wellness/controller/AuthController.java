@@ -28,7 +28,6 @@ public class AuthController {
     private JwtTokenUtils jwtTokenUtils;
     private final UserRegistrationService userRegistrationService;
 
-
     @PostMapping("/login")
     public ResponseEntity<JWTResponseDto> login (@Valid @RequestBody JwtRequestDto jwtRequest){
         return ResponseEntity.ok(authService.login(jwtRequest));

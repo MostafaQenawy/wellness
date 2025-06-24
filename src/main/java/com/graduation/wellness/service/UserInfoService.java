@@ -18,12 +18,11 @@ public class UserInfoService {
     private final UserRepo userRepository;
     private final JwtTokenUtils jwtTokenUtils;
 
-    public void saveUserData(UserInfo userInfo, String userEmail) {
+    public UserInfo saveUserData(UserInfo userInfoInput, String userEmail) {
         User user = userService.loadUserByEmail(userEmail);
-        userInfo.setUser(user);
-        userInfo.setId(user.getId()); // ensures it's treated as update
-        userInfoRepository.save(userInfo);
 
+        userInfoInput.setUser(user);
+        return userInfoRepository.save(userInfoInput); // 💡 return the saved managed entity
     }
 
     public UserInfoDTO getUserInfo() {
@@ -31,12 +30,12 @@ public class UserInfoService {
         Long userID = jwtTokenUtils.getIdFromToken(jwtToken);
 
         User user = userRepository.findUserById(userID);
-        if( user == null)
-            new RuntimeException("User not found");
+        if (user == null)
+            throw new RuntimeException("User not found");
 
         UserInfo userInfo = userInfoRepository.findUserInfoById(userID);
-        if(userInfo == null)
-            new RuntimeException("UserInfo not found");
+        if (userInfo == null)
+            throw new RuntimeException("UserInfo not found");
 
         return UserInfoMapper.toDTO(user, userInfo);
     }

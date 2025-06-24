@@ -65,7 +65,12 @@ public class UserService {
             User user = new User();
             user.setEmail(json.getString("email"));
             user.setFirstName(json.getString("given_name"));
-            user.setLastName(json.getString("family_name"));
+
+            if (json.has("family_name"))
+                user.setLastName(json.getString("family_name"));
+            else
+                user.setLastName(json.getString("given_name"));
+
             user.setProvider("GOOGLE");
             user.setProviderUserId(json.getString("sub"));
             return user;

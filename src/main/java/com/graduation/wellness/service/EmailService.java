@@ -37,7 +37,7 @@ public class EmailService {
     ) throws MessagingException {
         String templateName;
         if (emailTemplate == null) {
-            templateName = "confirm-email";
+            templateName = "activate account";
         } else {
             templateName = emailTemplate.name();
         }
@@ -58,7 +58,7 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(emailTemplate.getName());
 
-        String template = templateEngine.process(templateName, context);
+        String template = templateEngine.process(templateName.toLowerCase(), context);
 
         helper.setText(template, true);
 

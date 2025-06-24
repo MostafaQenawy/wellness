@@ -62,7 +62,6 @@ public class UserController {
         return userService.getProfilePicture();
     }
 
-
     @PostMapping("/updateProfile")
     public Response updateAccount(@RequestBody UserInfoDTO userInfoDTO) {
         return userService.updateAccount(userInfoDTO);

@@ -34,7 +34,8 @@ public class ProgressService {
         userInfo.getUserPlan().getWeeks().forEach(week -> week.getDays().forEach(day -> {
             int total = day.getExercises().size();
             int done = (int) day.getExercises().stream().filter(UserPlanWeekDayExercise::isExerciseDone).count();
-            progressList.add(new DayProgressDTO(day.getDayNumber() + ((week.getWeekNumber() - 1) * 7), total, done));
+            int dayNumber = day.getDayNumber() + ((week.getWeekNumber() - 1) * 7);
+            progressList.add(new DayProgressDTO(dayNumber, total, done));
         }));
 
         return progressList;

@@ -20,7 +20,7 @@ The app provides intelligent, accessible, and personalized fitness support using
 📽 **Demo Video:**  
 
 <video 
-  src="[https://github.com/user-attachments/assets/070a8e13-b742-4dc1-a628-37796e5b779c](https://github.com/user-attachments/assets/3a8b5e24-dca0-44b2-84cd-449c4288c4a4"
+  src="https://github.com/user-attachments/assets/070a8e13-b742-4dc1-a628-37796e5b779c](https://github.com/user-attachments/assets/3a8b5e24-dca0-44b2-84cd-449c4288c4a4"
   controls
   width="320"
   style="border-radius:20px;">
